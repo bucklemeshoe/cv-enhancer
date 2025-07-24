@@ -1,0 +1,30 @@
+[build]
+  publish = ".next"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Enable Next.js support
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Redirect settings for custom domain
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {headers = {accept = "text/html"}}
+
+# Headers for better security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Function settings
+[functions]
+  node_bundler = "esbuild" 

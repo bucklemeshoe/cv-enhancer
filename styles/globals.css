@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Force teal focus rings and remove any blue defaults */
+input:focus,
+textarea:focus,
+select:focus {
+  --tw-ring-color: #0d9488 !important; /* teal-600 */
+  --tw-ring-opacity: 1 !important;
+  outline: none !important;
+  border-color: #0d9488 !important;
+}
+
+/* Fix compound input fields like phone number - only apply to tel inputs within flex containers */
+.flex input[type="tel"]:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Override any default browser focus styles */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px #0d9488 !important;
+}
+
+/* Radio button teal theme - consistent with other inputs */
+input[type="radio"] {
+  appearance: none;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  position: relative;
+  cursor: pointer;
+}
+
+input[type="radio"]:checked {
+  background-color: #0d9488;
+  border-color: #0d9488;
+}
+
+input[type="radio"]:checked::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+input[type="radio"]:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 2px #0d9488;
+}
+
+input[type="radio"]:hover {
+  border-color: #0f766e;
+}
+
+/* Custom styles for better typography and maritime theme */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Enhanced floating animations for background elements */
+@keyframes gentle-float-backup {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-25px) scale(1.08); }
+}
+
+@keyframes pulse-glow-backup {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 0.85; }
+}
+
+@keyframes rotate-slow-backup {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes drift-backup {
+  0%, 100% { transform: translateX(0px) translateY(0px); }
+  25% { transform: translateX(15px) translateY(-20px); }
+  50% { transform: translateX(-8px) translateY(-30px); }
+  75% { transform: translateX(-15px) translateY(-12px); }
+}
+
+/* Backup animation classes */
+.animate-gentle-float-backup { animation: gentle-float-backup 5s ease-in-out infinite; }
+.animate-pulse-glow-backup { animation: pulse-glow-backup 4s ease-in-out infinite; }
+.animate-rotate-slow-backup { animation: rotate-slow-backup 25s linear infinite; }
+.animate-drift-backup { animation: drift-backup 7s ease-in-out infinite; }
+
+/* Print styles for CV */
+@media print {
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+  
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    background: white !important;
+  }
+  
+  /* Hide elements not needed for print */
+  nav,
+  .print\:hidden,
+  button,
+  .fixed {
+    display: none !important;
+  }
+  
+  /* Keep header visible but style it for print */
+  header {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 1rem 0 !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Keep footer visible with contact info */
+  footer {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 1rem 0 !important;
+    margin-top: 1rem !important;
+  }
+  
+  /* Ensure waves are visible in print */
+  svg {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  
+
+  
+  .print\:break-inside-avoid {
+    break-inside: avoid;
+  }
+  
+  .print\:text-black {
+    color: black !important;
+  }
+  
+  /* Clean page layout */
+  main {
+    background: white !important;
+    min-height: auto !important;
+  }
+  
+
+  
+  /* Remove all shadows for clean print */
+  .shadow-xl,
+  .shadow-lg,
+  .shadow-md,
+  .shadow-sm,
+  * {
+    box-shadow: none !important;
+  }
+  
+  /* Clean section styling */
+  .bg-white {
+    background: white !important;
+  }
+  
+  .border-gray-200 {
+    border: none !important;
+  }
+  
+  .rounded-lg {
+    border-radius: 0 !important;
+  }
+  
+  /* Color optimization for print */
+  .text-blue-600 {
+    color: #1d4ed8 !important;
+  }
+  
+  .bg-blue-50 {
+    background: white !important;
+  }
+  
+  .bg-green-100 {
+    background: #f0f9ff !important;
+    border: 1px solid #e5e7eb !important;
+  }
+  
+  .text-green-800 {
+    color: #1f2937 !important;
+  }
+  
+
+  
+  /* Optimize spacing for print */
+  .space-y-6 > * + *,
+  .space-y-8 > * + * {
+    margin-top: 1rem !important;
+  }
+  
+  /* Grid layout optimization */
+  .grid {
+    gap: 1rem !important;
+  }
+  
+  /* Typography optimization */
+  h1, h2, h3, h4 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+  
+  p, li {
+    page-break-inside: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+  
+  /* Section breaks */
+  .mb-8 {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Ensure proper layout flow */
+  .max-w-7xl {
+    max-width: none !important;
+  }
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 1024px) {
+  /* Stack columns on mobile/tablet */
+  .lg\:grid-cols-12 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .lg\:col-span-8,
+  .lg\:col-span-4 {
+    grid-column: span 1 !important;
+  }
+  
+  /* Header stays horizontal on mobile */
+  
+  /* Simplify skills grid on mobile */
+  .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  .prose kbd {
+    @apply inline-flex items-center px-2 py-1 text-xs font-mono bg-gray-100 border border-gray-300 rounded;
+  }
+  
+  /* Maritime theme enhancements */
+  .maritime-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+  
+  .maritime-heading {
+    @apply text-xl font-bold text-gray-900 mb-4 border-b-2 border-blue-600 pb-2;
+  }
+  
+  .maritime-timeline {
+    @apply relative border-l-4 border-blue-200 pl-6 pb-6;
+  }
+  
+  .maritime-timeline::before {
+    content: '';
+    @apply absolute w-3 h-3 bg-blue-600 rounded-full -left-2 top-1;
+  }
+} 

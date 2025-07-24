@@ -1,0 +1,124 @@
+// Maritime/Yacht Crew CV Data - Replace with your own information
+export const cvData = {
+  header: {
+    name: "Jared Smith",
+    title: "Professional Yacht Crew",
+    email: "jared.smith@email.com",
+    phone: "+27 (0)82 123 4567",
+    location: "Cape Town, South Africa",
+    website: "https://jaredsmith.crew",
+    photo: "/images/profile-photo.png" // Profile image
+  },
+  personalInformation: {
+    location: "Cape Town, South Africa",
+    nationality: "South African",
+    languages: ["English (Native)", "Afrikaans (Fluent)", "French (Basic)"],
+    visa: "South African Passport",
+    health: "Excellent health, ENG1 Medical Certificate valid"
+  },
+  skills: [
+    "Communication",
+    "Organization", 
+    "Washdowns",
+    "Deck Maintenance",
+    "Time Management",
+    "Creativity",
+    "Problem Solving",
+    "Active Listener",
+    "Team Collaboration",
+    "Safety Protocols",
+    "Guest Services",
+    "Emergency Response"
+  ],
+  profile: "Dedicated and enthusiastic maritime professional with hands-on experience in yacht operations and guest services. Proven ability to maintain high standards of safety, cleanliness, and hospitality in dynamic offshore environments. Committed to continuous learning and professional development in the yachting industry. Strong work ethic with excellent communication skills and ability to work effectively in multicultural team environments.",
+  certifications: [
+    { name: "STCW Basic Safety Training", issuer: "MCA Approved Training Center", date: "2024" },
+    { name: "Designated Security Duties (DSD)", issuer: "Maritime Security Training", date: "2024" },
+    { name: "ENG1 Medical Certificate", issuer: "MCA Approved Doctor", date: "Valid until 2025" },
+    { name: "Food Safety & Hygiene Level 2", issuer: "CIEH", date: "2023" },
+    { name: "Powerboat Level 2", issuer: "RYA Training Center", date: "2023" },
+    { name: "VHF Radio Operator's License", issuer: "Ofcom", date: "2023" },
+    { name: "First Aid & CPR Certified", issuer: "Red Cross", date: "Valid until 2025" }
+  ],
+  experience: [
+    {
+      role: "Sole Deckhand",
+      vesselOrCompany: "Princess Skye",
+      startDate: "2025-03-01",
+      endDate: "2025-03-01",
+      location: "Cape Town, South Africa",
+      vesselDetails: "14 meters",
+      bullets: [
+        "Sole Deckhand"
+      ]
+    },
+    {
+      role: "Deckhand",
+      vesselOrCompany: "A Beautiful Life",
+      startDate: "2025-02-01",
+      endDate: "2025-03-01",
+      location: "Cape Town, South Africa",
+      vesselDetails: "16 meters Catamaran",
+      bullets: [
+        "Deckhand & Bartender"
+      ]
+    },
+    {
+      role: "Deckhand & Bartender",
+      vesselOrCompany: "Un Belle Vie, Catamaran",
+      startDate: "2025-02-01",
+      endDate: "2025-03-01",
+      location: "Cape Town, South Africa",
+      vesselDetails: "15 meters",
+      bullets: [
+        "Deckhand & Bartender"
+      ]
+    }
+  ],
+  education: [
+    {
+              qualification: "High School Certificate",
+      institution: "Hoërskool Duineveld",
+      startDate: "2020-01-01",
+      endDate: "2024-12-01"
+    },
+    {
+      qualification: "Maritime Training Courses",
+      institution: "South African Maritime Safety Authority",
+      startDate: "2024-11-01",
+      endDate: "2025-01-01"
+    }
+  ],
+  highestQualification: "High School Certificate",
+  hobbiesAndInterests: [
+    "Running & Swimming",
+    "Ocean & Adventure Sports",
+    "Exploring New Places",
+    "Medical & Emergency Care",
+    "Dynamic Challenges",
+    "Water Sports",
+    "Photography",
+    "Cultural Exchange",
+    "Fitness & Wellness"
+  ],
+  references: [
+    {
+      name: "Captain Agnasius van der Merwe",
+      roleOrRelation: "Captain, M/Y Princess Skye",
+      contact: "+33 6 12 34 56 78",
+      website: null
+    },
+    {
+      name: "Maria van Heerder",
+      roleOrRelation: "Chief Stewardess, M/Y A Beautiful Life",
+      contact: "maria.vh@beautifullife.yacht",
+      website: "https://linkedin.com/in/mariavanheerder"
+    },
+    {
+      name: "Marna Hannekom",
+      roleOrRelation: "First Officer, M/Y Un Belle Vie",
+      contact: "+34 687 123 456",
+      website: null
+    }
+  ]
+} 
