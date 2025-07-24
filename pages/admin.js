@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, EyeIcon } from '@heroicons/react/24/outline'
@@ -308,14 +309,16 @@ export default function Admin() {
           <div className="max-w-md w-full space-y-8">
             <div>
               <div className="flex justify-center mb-6">
-                <img 
-                  src="/images/Pull North Stamp design.png" 
-                  alt="Pull North Logo" 
-                  className="h-20 w-20 rounded-full bg-white p-3 shadow-lg object-contain"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
+                <Link href="/" className="hover:opacity-80 transition-opacity">
+                  <img 
+                    src="/images/Pull North Stamp design.png" 
+                    alt="Pull North Logo" 
+                    className="h-20 w-20 rounded-full bg-white p-3 shadow-lg object-contain cursor-pointer"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </Link>
               </div>
               <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
                 Admin Access
