@@ -1,4 +1,6 @@
-# Professional Yacht Crew CV Enhancement Service
+# Pull North Yachting CV Builder 🛥️
+
+**Live Production Service**: [cv.pullnorth.com](https://cv.pullnorth.com)
 
 A complete workflow system for collecting yacht crew applications, enhancing them with AI-powered improvements, and publishing beautiful responsive CVs with professional URLs.
 
@@ -13,18 +15,21 @@ A complete workflow system for collecting yacht crew applications, enhancing the
 ### 🔗 **Professional URL Structure**
 - **SEO-friendly URLs**: `/cvs/firstname-lastname-uniqueid` (e.g., `/cvs/jared-smith-ja8r3`)
 - **Automatic slug generation** during CV publishing process
-- **Backward compatibility** with existing CV systems
 - **Shareable professional links** for easy employer access
+- **Custom domain**: All CVs published at `cv.pullnorth.com/cvs/[name]`
 
 ### 🛡️ **Enhanced Admin Experience**
 - **Unsaved changes protection** prevents data loss when navigating away
 - **Streamlined CV editing interface** with consistent navigation
 - **Real-time form validation** and user feedback
 - **Progress tracking** for AI enhancement operations
+- **Secure admin dashboard** with password protection
 
 ## 🚀 Complete Workflow
 
-### Phase 1: Student Application (`/apply`)
+### Phase 1: Student Application
+**URL**: [cv.pullnorth.com/apply](https://cv.pullnorth.com/apply)
+
 Students submit comprehensive applications including:
 - Personal information and contact details
 - Work experience with detailed responsibilities
@@ -33,34 +38,41 @@ Students submit comprehensive applications including:
 - Professional references
 - Profile pictures with live preview
 
-### Phase 2: Admin Review & Enhancement (`/admin`)
+### Phase 2: Admin Review & Enhancement
+**URL**: [cv.pullnorth.com/admin](https://cv.pullnorth.com/admin)
+
 Administrators can:
 - Review all submitted applications with status tracking
 - Edit and enhance CV content with AI assistance
 - Publish professional CVs with custom URLs
 - Manage the complete application lifecycle
 
-### Phase 3: Published CV Pages (`/cvs/[slug]`)
+### Phase 3: Published CV Pages
+**URL**: `cv.pullnorth.com/cvs/[firstname-lastname-id]`
+
 Professional CV pages featuring:
 - Responsive design optimized for all devices
 - Print/PDF friendly layouts
 - Professional typography and spacing
 - Integrated profile photos
+- Modern Pull North branding
 
 ## 🛠 Technical Stack
 
 - **Framework**: Next.js 14 with React 18
-- **Styling**: Tailwind CSS with professional UI components
+- **Styling**: Tailwind CSS with custom Pull North branding
+- **Typography**: Montserrat (headings) + Karla (body)
 - **AI Integration**: OpenAI GPT models for content enhancement
-- **File Storage**: Local JSON files with image upload support
-- **Image Processing**: Optimized profile picture handling
+- **File Storage**: Efficient JSON-based storage system
+- **Deployment**: Netlify with custom domain
+- **Version Control**: GitHub ([bucklemeshoe/cv-enhancer](https://github.com/bucklemeshoe/cv-enhancer))
 
 ## 📁 Project Structure
 
 ```
 cv-builder/
 ├── pages/
-│   ├── index.js                    # Landing page
+│   ├── index.js                    # Professional homepage
 │   ├── apply.js                    # Student application form
 │   ├── admin.js                    # Admin dashboard
 │   ├── admin/edit/[id].js          # CV editing interface with AI enhancement
@@ -79,115 +91,52 @@ cv-builder/
 │   ├── submissions/               # Student application data
 │   └── published/                 # Published CV data
 ├── public/
-│   ├── images/                    # Static assets
-│   └── uploads/profiles/          # Profile picture storage
+│   └── images/                    # Static assets and Pull North branding
 └── styles/
-    └── globals.css               # Global styles
+    └── globals.css               # Custom styling and responsive design
 ```
 
-## 🎯 Quick Start
+## 🎯 Usage Guide
 
-1. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
-
-2. **Environment Setup**:
-   Create `.env.local` file:
-   ```env
-   OPENAI_API_KEY=your-openai-api-key-here
-   ```
-
-3. **Start Development Server**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Access the System**:
-   - Homepage: `http://localhost:3000`
-   - Application Form: `http://localhost:3000/apply`
-   - Admin Dashboard: `http://localhost:3000/admin` (Password: `cvadmin2024`)
-
-## 📋 Detailed Usage
-
-### For Students:
-1. Visit `/apply` to access the application form
+### For Yacht Crew Candidates:
+1. Visit [cv.pullnorth.com/apply](https://cv.pullnorth.com/apply)
 2. Fill out comprehensive CV information
 3. Upload profile picture with live preview
-4. Submit application for admin review
-5. Receive professional CV URL once published
+4. Submit application for professional review
+5. Receive professional CV URL once published (e.g., `cv.pullnorth.com/cvs/your-name-abc12`)
 
-### For Administrators:
-1. Access admin dashboard at `/admin`
-2. Review submitted applications
+### For Pull North Administrators:
+1. Access admin dashboard at [cv.pullnorth.com/admin](https://cv.pullnorth.com/admin)
+2. Review submitted applications with completion tracking
 3. Edit CV content using the enhanced interface
 4. Use AI enhancement features:
    - **Individual field enhancement**: Click magic wand icons on specific fields
    - **Bulk enhancement**: Use "✨ AI Enhance" button to improve all fields at once
 5. Publish CVs to generate professional URLs
-6. Share CV links with students
+6. Share CV links with students and employers
 
 ## 🤖 AI Enhancement Features
 
 ### Smart Content Improvement
 - **Profile Summary**: Polishes grammar and professional language
-- **Hobbies & Interests**: Converts to proper comma-separated format
-- **Work Experience**: Improves clarity and professional terminology
+- **Work Experience**: Improves clarity and maritime terminology
+- **Skills Enhancement**: Optimizes skill descriptions for yacht crew industry
+- **Professional Language**: Ensures industry-appropriate tone
 
-### Conservative Approach
-- ✅ Preserves all original content and experiences
-- ✅ Focuses on grammar, clarity, and professional language
-- ✅ No exaggeration or fictional additions
-- ✅ Maintains factual, professional tone
-- ❌ No emojis or overly enthusiastic language
-- ❌ No made-up experiences or qualifications
+### Conservative Enhancement Approach
+- ✅ **Preserves all original content** and experiences
+- ✅ **Focuses on grammar, clarity** and professional language
+- ✅ **No exaggeration** or fictional additions
+- ✅ **Maintains factual, professional tone**
+- ✅ **Maritime industry optimization**
+- ❌ **No emojis** or overly enthusiastic language
+- ❌ **No made-up experiences** or qualifications
 
 ### User Experience
 - **Progress Modal**: Shows step-by-step progress during bulk enhancement
 - **Loading Indicators**: Visual feedback for individual field enhancements
 - **Error Handling**: Graceful handling of API rate limits and failures
 - **Toast Notifications**: Immediate feedback on successful operations
-
-## 🔧 Configuration
-
-### AI Enhancement Settings
-Configure prompts in `pages/api/admin/ai-enhance.js`:
-- Adjust enhancement guidelines for each field type
-- Modify OpenAI model settings (temperature, max tokens)
-- Customize system prompts for industry-specific language
-
-### URL Structure
-Modify slug generation in `pages/api/admin/publish-cv.js`:
-```javascript
-// Current format: firstname-lastname-uniqueid
-const concatenatedSlug = `${firstName}-${lastName}-${uniqueId}`
-```
-
-### Admin Authentication
-Update password in `pages/admin.js` and `pages/admin/edit/[id].js`:
-```javascript
-const ADMIN_PASSWORD = 'cvadmin2024'  // Change for production
-```
-
-## 🚀 Deployment
-
-### Environment Variables for Production
-```env
-OPENAI_API_KEY=your-production-openai-key
-NODE_ENV=production
-```
-
-### Vercel Deployment
-```bash
-npm run build
-vercel --prod
-```
-
-### Security Considerations
-- Change default admin password for production
-- Secure OpenAI API key storage
-- Implement proper session management for production use
-- Configure file upload restrictions and validation
 
 ## 📊 Data Flow
 
@@ -197,53 +146,94 @@ Professional URL Generation → Published CV → Employer Access
 ```
 
 ### Data Structure
-- **Submissions**: `/data/submissions/[name-uniqueid].json`
+- **Submissions**: `/data/submissions/[firstname-lastname-uniqueid].json`
 - **Published CVs**: `/data/published/[uniqueid].json`
 - **URL Mapping**: Dynamic slug mapping in `/pages/cvs/[slug].js`
+- **Professional URLs**: `cv.pullnorth.com/cvs/[firstname-lastname-uniqueid]`
 
 ## 🔒 Security Features
 
 - **Input validation** on all form fields
 - **File upload restrictions** for profile pictures
 - **XSS protection** with proper data sanitization
-- **Rate limiting** recommendations for AI API calls
-- **Admin authentication** with password protection
+- **Admin authentication** with secure password protection
+- **Environment variable protection** for API keys
+- **Git security** with proper .gitignore configuration
 
-## 💡 Use Cases
+## 🌐 Live Production Environment
 
-Perfect for:
-- **Maritime academies** managing student job placements
-- **Yacht crew agencies** creating professional profiles
-- **Career development programs** with AI-assisted content improvement
-- **Recruitment platforms** requiring professional CV formatting
-- **Training organizations** helping students present their experience professionally
+### **Current Status**: ✅ **LIVE & OPERATIONAL**
+- **Primary URL**: [cv.pullnorth.com](https://cv.pullnorth.com)
+- **Application Form**: [cv.pullnorth.com/apply](https://cv.pullnorth.com/apply)
+- **Admin Dashboard**: [cv.pullnorth.com/admin](https://cv.pullnorth.com/admin)
+- **Published CVs**: `cv.pullnorth.com/cvs/[name]`
 
-## 🔄 Future Enhancements
+### **Deployment Details**
+- **Platform**: Netlify
+- **Repository**: [github.com/bucklemeshoe/cv-enhancer](https://github.com/bucklemeshoe/cv-enhancer)
+- **Custom Domain**: cv.pullnorth.com (CNAME configured via GoDaddy)
+- **SSL Certificate**: Automatic (provided by Netlify)
+- **Build Command**: `npm run build`
+- **Environment Variables**: Configured in Netlify dashboard
 
-### Planned Features
-- **User authentication system** with role-based access
-- **Email notifications** for students when CVs are published
-- **Bulk operations** for processing multiple CVs
-- **Analytics dashboard** for tracking application success
-- **Template customization** for different yacht crew roles
+### **Performance & Scaling**
+- **Current Capacity**: Optimized for 100-1,000 CVs
+- **File-based Storage**: Efficient for current scale
+- **No Database Required**: Cost-effective and maintenance-free
+- **CDN Optimized**: Global content delivery via Netlify
 
-### Technical Improvements
-- **Database integration** for better data management
-- **File storage optimization** with cloud solutions
-- **Advanced AI features** with custom training data
-- **API rate limiting** and caching for production scale
-- **Automated testing** and CI/CD pipeline
+## 🔧 Configuration
+
+### **Admin Authentication**
+- **Access**: [cv.pullnorth.com/admin](https://cv.pullnorth.com/admin)
+- **Password**: Set in production environment
+- **Security**: Password-protected admin access only
+
+### **AI Enhancement Settings**
+- **API Provider**: OpenAI GPT models
+- **Enhancement Type**: Conservative, professional improvements
+- **Industry Focus**: Maritime/yacht crew specialization
+- **Rate Limiting**: Configured for optimal performance
+
+### **URL Structure**
+```javascript
+// Format: firstname-lastname-uniqueid
+const concatenatedSlug = `${firstName}-${lastName}-${uniqueId}`
+// Example: cv.pullnorth.com/cvs/jared-smith-ja8r3
+```
+
+## 💡 Perfect For
+
+### **Target Users**
+- **Yacht crew candidates** seeking professional CV enhancement
+- **Pull North training graduates** needing job-ready CVs
+- **Maritime professionals** transitioning to yacht industry
+- **International crew members** requiring professional English CVs
+
+### **Use Cases**
+- **Career development** with AI-assisted content improvement
+- **Professional portfolio** creation for yacht crew
+- **Recruitment support** with shareable professional URLs
+- **Training program completion** certificates and CV enhancement
+
+## 📈 Results & Benefits
+
+This system delivers **enterprise-quality CV enhancement** specifically designed for the yacht crew industry:
+
+✅ **Professional content improvement** with maritime industry expertise  
+✅ **SEO-friendly URL structure** for better discoverability  
+✅ **Mobile-responsive design** optimized for all devices  
+✅ **Comprehensive admin tools** for efficient CV management  
+✅ **Industry-specific optimization** for yacht crew positioning  
+✅ **Cost-effective scaling** with file-based architecture  
+✅ **Professional Pull North branding** throughout  
+
+## 🎉 Success Metrics
+
+The platform successfully helps yacht crew candidates present their experience professionally while giving Pull North administrators powerful tools to enhance and manage CV content efficiently, contributing to better job placement rates and professional development outcomes.
 
 ---
 
-## 🌟 Results
+**Built with ❤️ by bucklemeshoe for Pull North Yachting**
 
-This system delivers **enterprise-quality CV enhancement** specifically designed for the yacht crew industry, combining:
-
-✅ **Professional content improvement** with AI assistance  
-✅ **SEO-friendly URL structure** for better discoverability  
-✅ **Mobile-responsive design** for modern user expectations  
-✅ **Comprehensive admin tools** for efficient CV management  
-✅ **Industry-specific optimization** for yacht crew positioning  
-
-The platform helps yacht crew candidates present their experience professionally while giving administrators powerful tools to enhance and manage CV content efficiently. 
+*Production System - Last Updated: January 2025* 
