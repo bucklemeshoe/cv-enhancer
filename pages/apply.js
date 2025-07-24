@@ -310,10 +310,10 @@ export default function Apply() {
         <title>Apply for CV Enhancement - Professional Yacht Crew CVs</title>
         <meta name="description" content="Submit your information for professional CV enhancement" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico?v=4" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=4" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png?v=4" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png?v=4" />
         <style jsx>{`
           /* Enhanced date picker styling for mobile */
           input[type="date"] {

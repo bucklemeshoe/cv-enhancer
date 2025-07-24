@@ -8,10 +8,10 @@ export default function Home() {
         <title>Professional Yacht Crew CV Builder - Pull North</title>
         <meta name="description" content="Professional CV enhancement service for yacht crew members" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico?v=4" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=4" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png?v=4" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png?v=4" />
         <link
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Karla:wght@300;400;500;600&display=swap"
           rel="stylesheet"

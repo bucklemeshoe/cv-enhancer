@@ -298,10 +298,10 @@ export default function Admin() {
         <Head>
           <title>Admin Login - Pull North</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-          <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
-          <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+          <link rel="icon" href="/favicon.ico?v=4" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=4" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png?v=4" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png?v=4" />
         </Head>
         
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-blue-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -365,10 +365,10 @@ export default function Admin() {
       <Head>
         <title>Admin Dashboard - Pull North</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+        <link rel="icon" href="/favicon.ico?v=4" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=4" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png?v=4" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png?v=4" />
       </Head>
       
       <div className="min-h-full">
