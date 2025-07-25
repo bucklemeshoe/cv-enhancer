@@ -42,6 +42,71 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: 'Submission not found' })
     }
 
+    // If this submission is published, also update the published CV
+    if (data.status === 'published') {
+      console.log('Updating published CV for:', data.unique_id)
+      
+      // Use the latest student data (could be enhanced_data or student_data)
+      const cvData = data.enhanced_data || data.student_data
+      
+      // Generate the same slug format as publish-cv.js
+      const firstName = cvData.firstName.toLowerCase().replace(/\s+/g, '-')
+      const lastName = cvData.lastName.toLowerCase().replace(/\s+/g, '-')
+      const uniqueId = data.unique_id.toLowerCase()
+      const concatenatedSlug = `${firstName}-${lastName}-${uniqueId}`
+      
+      // Transform the data to match the existing CV format (same as publish-cv.js)
+      const publishedCV = {
+        header: {
+          name: `${cvData.firstName} ${cvData.lastName}`,
+          title: cvData.targetRole || "Professional Yacht Crew",
+          email: cvData.email,
+          phone: cvData.phone,
+          location: cvData.location,
+          website: cvData.website || null,
+          photo: cvData.profilePicture || null
+        },
+        personalInformation: {
+          location: cvData.location,
+          nationality: cvData.nationality,
+          languages: cvData.languages?.filter(l => l) || [],
+          visa: Array.isArray(cvData.visa) 
+            ? cvData.visa.filter(v => v).join(', ') 
+            : cvData.visa || '',
+          health: cvData.health
+        },
+        skills: typeof cvData.skills === 'string' 
+          ? cvData.skills.split(',').map(s => s.trim()).filter(s => s) 
+          : cvData.skills?.filter(s => s) || [],
+        profile: cvData.profile || "",
+        certifications: cvData.certifications?.filter(c => c.name) || [],
+        experience: cvData.experience?.filter(e => e.role) || [],
+        education: cvData.education?.filter(e => e.qualification) || [],
+        highestQualification: cvData.highestQualification || 'Matric',
+        hobbiesAndInterests: typeof cvData.hobbiesAndInterests === 'string' 
+          ? cvData.hobbiesAndInterests.split(',').map(h => h.trim()).filter(h => h) 
+          : cvData.hobbiesAndInterests?.filter(h => h) || [],
+        references: cvData.references?.filter(r => r.name) || []
+      }
+
+      // Update the published CV
+      const { error: publishError } = await supabase
+        .from('published_cvs')
+        .update({
+          slug: concatenatedSlug,
+          cv_data: publishedCV,
+          updated_at: new Date().toISOString()
+        })
+        .eq('unique_id', data.unique_id)
+
+      if (publishError) {
+        console.error('Error updating published CV:', publishError)
+        // Don't fail the whole request, just log the error
+      } else {
+        console.log('✅ Published CV updated successfully')
+      }
+    }
+
     res.status(200).json({ message: 'Submission updated successfully', submission: data })
 
   } catch (error) {
