@@ -1,6 +1,5 @@
 import Head from 'next/head'
-import fs from 'fs'
-import path from 'path'
+import { supabase } from '../../lib/supabase'
 
 // Import all CV components - matching template structure
 import Navigation from '../../components/Navigation'
@@ -134,19 +133,36 @@ export async function getServerSideProps(context) {
   const { slug } = context.params
   
   try {
-    // Map concatenated name-ID slugs to their corresponding data files
-    const slugMapping = {
-      'jared-smith-ja8r3': 'JA8R3'
+    // First try to find by slug
+    let { data: cvRecord, error } = await supabase
+      .from('published_cvs')
+      .select('cv_data')
+      .eq('slug', slug)
+      .single()
+
+    // If not found by slug, try by unique_id (for backward compatibility)
+    if (error && error.code === 'PGRST116') {
+      const { data: cvRecordById, error: errorById } = await supabase
+        .from('published_cvs')
+        .select('cv_data')
+        .eq('unique_id', slug.toUpperCase())
+        .single()
+      
+      cvRecord = cvRecordById
+      error = errorById
     }
-    
-    // Determine the actual filename to load
-    const actualSlug = slugMapping[slug] || slug
-    
-    // Read the published CV data
-    const publishedDir = path.join(process.cwd(), 'data', 'published')
-    const filePath = path.join(publishedDir, `${actualSlug}.json`)
-    
-    if (!fs.existsSync(filePath)) {
+
+    if (error) {
+      console.error('Error loading CV from database:', error)
+      return {
+        props: {
+          cvData: null,
+          slug
+        }
+      }
+    }
+
+    if (!cvRecord) {
       return {
         props: {
           cvData: null,
@@ -155,12 +171,9 @@ export async function getServerSideProps(context) {
       }
     }
     
-    const fileContent = fs.readFileSync(filePath, 'utf8')
-    const cvData = JSON.parse(fileContent)
-    
     return {
       props: {
-        cvData,
+        cvData: cvRecord.cv_data,
         slug
       }
     }

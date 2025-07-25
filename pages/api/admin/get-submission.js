@@ -1,5 +1,4 @@
-import fs from 'fs'
-import path from 'path'
+import { supabase } from '../../../lib/supabase'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -13,31 +12,46 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing submission ID' })
     }
 
-    // Find the submission file
-    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
-    const files = fs.readdirSync(submissionsDir)
-    
-    let submission = null
+    // Fetch the specific submission from Supabase
+    const { data: submission, error } = await supabase
+      .from('submissions')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    for (const file of files) {
-      if (file.endsWith('.json')) {
-        const filePath = path.join(submissionsDir, file)
-        const sub = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-        if (sub.id === id) {
-          submission = sub
-          break
-        }
+    if (error) {
+      console.error('Supabase fetch error:', error)
+      
+      if (error.code === 'PGRST116') {
+        return res.status(404).json({ message: 'Submission not found' })
       }
+      
+      return res.status(500).json({ message: `Database error: ${error.message}` })
     }
 
     if (!submission) {
       return res.status(404).json({ message: 'Submission not found' })
     }
 
-    res.status(200).json({ submission })
+    // Transform data to match the existing format expected by the frontend
+    const transformedSubmission = {
+      id: submission.id,
+      uniqueId: submission.unique_id,
+      studentData: submission.student_data,
+      enhancedData: submission.enhanced_data,
+      status: submission.status,
+      submittedAt: submission.submitted_at,
+      updatedAt: submission.updated_at,
+      reviewedAt: submission.reviewed_at,
+      publishedAt: submission.published_at,
+      publishedSlug: submission.published_slug,
+      slug: submission.published_slug
+    }
+
+    res.status(200).json({ submission: transformedSubmission })
 
   } catch (error) {
-    console.error('Error fetching submission:', error)
-    res.status(500).json({ message: 'Internal server error' })
+    console.error('Error loading submission:', error)
+    res.status(500).json({ message: `Internal server error: ${error.message}` })
   }
 } 
