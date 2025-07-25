@@ -547,10 +547,14 @@ export default function EditCV() {
           router.push('/admin')
         }, 2000)
       } else {
-        setSubmitMessage('Error updating CV. Please try again.')
+        // Get specific error message from server
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
+        console.error('Update failed:', response.status, errorData)
+        setSubmitMessage(`Update failed: ${errorData.message || 'Please try again.'}`)
       }
     } catch (error) {
-      setSubmitMessage('Error updating CV. Please try again.')
+      console.error('Network error:', error)
+      setSubmitMessage(`Network error: ${error.message || 'Please check your connection and try again.'}`)
     }
     
     setIsSubmitting(false)

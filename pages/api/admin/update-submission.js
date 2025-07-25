@@ -36,6 +36,11 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: 'Submission not found' })
     }
 
+    // Validate required fields
+    if (!studentData.firstName || !studentData.lastName || !studentData.email) {
+      return res.status(400).json({ message: 'Missing required fields: firstName, lastName, and email are required' })
+    }
+
     // Update the submission with new data
     const updatedSubmission = {
       ...submission,
@@ -44,12 +49,25 @@ export default async function handler(req, res) {
     }
 
     // Save the updated submission
-    fs.writeFileSync(submissionFilePath, JSON.stringify(updatedSubmission, null, 2))
+    try {
+      fs.writeFileSync(submissionFilePath, JSON.stringify(updatedSubmission, null, 2))
+    } catch (writeError) {
+      console.error('File write error:', writeError)
+      return res.status(500).json({ message: `Failed to save file: ${writeError.message}` })
+    }
 
     res.status(200).json({ message: 'Submission updated successfully' })
 
   } catch (error) {
     console.error('Error updating submission:', error)
-    res.status(500).json({ message: 'Internal server error' })
+    if (error.code === 'ENOENT') {
+      res.status(404).json({ message: 'Submission file not found' })
+    } else if (error.code === 'EACCES') {
+      res.status(500).json({ message: 'Permission denied - cannot write to file' })
+    } else if (error instanceof SyntaxError) {
+      res.status(400).json({ message: 'Invalid JSON data provided' })
+    } else {
+      res.status(500).json({ message: `Internal server error: ${error.message}` })
+    }
   }
 } 
