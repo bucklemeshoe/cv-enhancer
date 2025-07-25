@@ -856,7 +856,33 @@ export default function EditCV() {
                   Make changes to this CV application. All modifications will be saved to the submission record.
                 </p>
               </div>
-              <div className="mt-4 flex shrink-0 md:mt-0 md:ml-4">
+              <div className="mt-4 flex shrink-0 space-x-3 md:mt-0 md:ml-4">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleSubmit(e)
+                  }}
+                  disabled={isSubmitting}
+                  className="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ 
+                    backgroundColor: isSubmitting ? '#9CA3AF' : '#059669',
+                    borderColor: isSubmitting ? '#9CA3AF' : '#059669'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSubmitting) {
+                      e.target.style.backgroundColor = '#047857'
+                      e.target.style.borderColor = '#047857'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSubmitting) {
+                      e.target.style.backgroundColor = '#059669'
+                      e.target.style.borderColor = '#059669'
+                    }
+                  }}
+                >
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+                </button>
                 <button
                   onClick={handleBackToAdmin}
                   className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
