@@ -54,15 +54,6 @@ export default function PrintCV({ cvData, slug }) {
                 ← Back to CV
               </button>
               <button
-                onClick={() => {
-                  // Use regular window.print() for better compatibility
-                  window.print();
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md hover:bg-teal-700 transition-colors shadow-md"
-              >
-                🖨️ Print CV
-              </button>
-              <button
                 onClick={async (event) => {
                   try {
                     // Dynamically import the libraries
@@ -123,21 +114,15 @@ export default function PrintCV({ cvData, slug }) {
                     console.error('PDF generation failed:', error);
                     alert('Failed to generate PDF. Please try again or use the print option.');
                     // Reset button on error
-                    event.target.textContent = '📥 Download PDF';
+                    event.target.textContent = 'Download PDF';
                     event.target.disabled = false;
                     // Show no-print section again
                     document.querySelector('.no-print').style.display = 'block';
                   }
                 }}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 transition-colors shadow-md"
+                className="px-4 py-2 text-sm font-medium text-white bg-teal-700 border border-transparent rounded-md hover:bg-teal-800 transition-colors shadow-md"
               >
-                📥 Download PDF
-              </button>
-              <button
-                onClick={() => window.print()}
-                className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-              >
-                📄 Quick Print
+                Download PDF
               </button>
             </div>
           </div>
