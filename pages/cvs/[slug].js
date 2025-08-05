@@ -241,7 +241,17 @@ export async function getServerSideProps(context) {
     const fileContent = fs.readFileSync(filePath, 'utf8')
     const publishedData = JSON.parse(fileContent)
 
-    if (!publishedData || !publishedData.cvData) {
+    // Handle both old format (direct CV data) and new format (wrapped in cvData)
+    let cvData = null
+    if (publishedData.cvData) {
+      // New format: { cvData: {...}, uniqueId: "...", slug: "..." }
+      cvData = publishedData.cvData
+    } else if (publishedData.header) {
+      // Old format: direct CV data object
+      cvData = publishedData
+    }
+
+    if (!cvData) {
       return {
         props: {
           cvData: null,
@@ -252,7 +262,7 @@ export async function getServerSideProps(context) {
     
     return {
       props: {
-        cvData: publishedData.cvData,
+        cvData: cvData,
         slug
       }
     }

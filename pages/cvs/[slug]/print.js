@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import { supabase } from '../../../lib/supabase'
+import fs from 'fs'
+import path from 'path'
 
 // Import print-optimized components
 import PrintHeader from '../../../components/print/PrintHeader'
@@ -193,27 +194,11 @@ export async function getServerSideProps(context) {
   const { slug } = context.params
   
   try {
-    // First try to find by slug
-    let { data: cvRecord, error } = await supabase
-      .from('published_cvs')
-      .select('cv_data')
-      .eq('slug', slug)
-      .single()
-
-    // If not found by slug, try by unique_id (for backward compatibility)
-    if (error && error.code === 'PGRST116') {
-      const { data: cvRecordById, error: errorById } = await supabase
-        .from('published_cvs')
-        .select('cv_data')
-        .eq('unique_id', slug.toUpperCase())
-        .single()
-      
-      cvRecord = cvRecordById
-      error = errorById
-    }
-
-    if (error) {
-      console.error('Error loading CV from database:', error)
+    // Extract uniqueId from slug (format: firstname-lastname-uniqueid)
+    const slugParts = slug.split('-')
+    const uniqueId = slugParts[slugParts.length - 1]?.toUpperCase()
+    
+    if (!uniqueId) {
       return {
         props: {
           cvData: null,
@@ -222,7 +207,32 @@ export async function getServerSideProps(context) {
       }
     }
 
-    if (!cvRecord) {
+    // Read the JSON file for the requested CV
+    const filePath = path.join(process.cwd(), 'data', 'published', `${uniqueId}.json`)
+    
+    if (!fs.existsSync(filePath)) {
+      return {
+        props: {
+          cvData: null,
+          slug
+        }
+      }
+    }
+    
+    const fileContent = fs.readFileSync(filePath, 'utf8')
+    const publishedData = JSON.parse(fileContent)
+
+    // Handle both old format (direct CV data) and new format (wrapped in cvData)
+    let cvData = null
+    if (publishedData.cvData) {
+      // New format: { cvData: {...}, uniqueId: "...", slug: "..." }
+      cvData = publishedData.cvData
+    } else if (publishedData.header) {
+      // Old format: direct CV data object
+      cvData = publishedData
+    }
+
+    if (!cvData) {
       return {
         props: {
           cvData: null,
@@ -233,7 +243,7 @@ export async function getServerSideProps(context) {
     
     return {
       props: {
-        cvData: cvRecord.cv_data,
+        cvData: cvData,
         slug
       }
     }
