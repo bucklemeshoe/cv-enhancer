@@ -8,6 +8,7 @@ export default async function handler(req, res) {
 
   try {
     const { submissionId } = req.body
+    console.log('Delete CV request received for submissionId:', submissionId)
 
     if (!submissionId) {
       return res.status(400).json({ message: 'Missing submissionId' })
@@ -15,6 +16,7 @@ export default async function handler(req, res) {
 
     // Find and delete the submission
     const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
+    console.log('Looking for submissions in directory:', submissionsDir)
     
     // Check if submissions directory exists
     if (!fs.existsSync(submissionsDir)) {
@@ -23,6 +25,7 @@ export default async function handler(req, res) {
     }
     
     const files = fs.readdirSync(submissionsDir)
+    console.log('Found files in submissions directory:', files.length)
     
     let submission = null
     let submissionFilePath = null
@@ -45,14 +48,20 @@ export default async function handler(req, res) {
     }
 
     if (!submission) {
+      console.log('Submission not found for ID:', submissionId)
       return res.status(404).json({ message: 'Submission not found' })
     }
 
+    console.log('Found submission to delete:', submission.studentData?.firstName, submission.studentData?.lastName)
+
     // Delete the submission file
+    console.log('Deleting submission file:', submissionFilePath)
     fs.unlinkSync(submissionFilePath)
+    console.log('Submission file deleted successfully')
 
     // If the CV was published, also delete the published version
     if (submission.status === 'published' && submission.slug) {
+      console.log('Checking for published CV with slug:', submission.slug)
       const publishedDir = path.join(process.cwd(), 'data', 'published')
       
       // Check if published directory exists
@@ -60,7 +69,11 @@ export default async function handler(req, res) {
         const publishedFilePath = path.join(publishedDir, `${submission.slug}.json`)
         
         if (fs.existsSync(publishedFilePath)) {
+          console.log('Deleting published CV file:', publishedFilePath)
           fs.unlinkSync(publishedFilePath)
+          console.log('Published CV file deleted successfully')
+        } else {
+          console.log('Published CV file not found:', publishedFilePath)
         }
       } else {
         console.warn('Published directory does not exist:', publishedDir)
