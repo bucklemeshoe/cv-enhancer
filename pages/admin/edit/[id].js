@@ -1180,7 +1180,7 @@ export default function EditCV() {
                       <div className="mt-2 sm:col-span-2 sm:mt-0">
                         <div className="flex items-center gap-x-6">
                           {formData.profilePicture && 
-                           (typeof formData.profilePicture === 'string' && formData.profilePicture.startsWith('data:')) || 
+                           (typeof formData.profilePicture === 'string' && formData.profilePicture.trim() !== '') || 
                            (typeof formData.profilePicture === 'object' && formData.profilePicture instanceof File) ? (
                             <img
                               src={typeof formData.profilePicture === 'string' ? formData.profilePicture : URL.createObjectURL(formData.profilePicture)}
@@ -1193,7 +1193,7 @@ export default function EditCV() {
                             />
                           ) : null}
                           {!(formData.profilePicture && 
-                             ((typeof formData.profilePicture === 'string' && formData.profilePicture.startsWith('data:')) || 
+                             ((typeof formData.profilePicture === 'string' && formData.profilePicture.trim() !== '') || 
                               (typeof formData.profilePicture === 'object' && formData.profilePicture instanceof File))) && (
                             <div className="size-24 rounded-full bg-gray-100 flex items-center justify-center ring-2 ring-gray-300">
                               <svg className="size-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
