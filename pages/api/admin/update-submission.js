@@ -21,48 +21,68 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse FormData
-    const form = formidable({})
-    const [fields, files] = await form.parse(req)
-    
-    const submissionId = Array.isArray(fields.submissionId) ? fields.submissionId[0] : fields.submissionId
+    let submissionId, studentData
+
+    // Check if request is JSON (from admin edit form) or FormData (from file uploads)
+    if (req.headers['content-type']?.includes('application/json')) {
+      // Handle JSON request from admin edit form
+      let body = ''
+      req.on('data', chunk => {
+        body += chunk.toString()
+      })
+      
+      await new Promise((resolve) => {
+        req.on('end', resolve)
+      })
+      
+      const parsed = JSON.parse(body)
+      submissionId = parsed.submissionId
+      studentData = parsed.studentData
+      
+    } else {
+      // Handle FormData request (for file uploads)
+      const form = formidable({})
+      const [fields, files] = await form.parse(req)
+      
+      submissionId = Array.isArray(fields.submissionId) ? fields.submissionId[0] : fields.submissionId
+      
+      // Convert studentData to proper format
+      studentData = {}
+      Object.keys(fields).forEach(key => {
+        if (key !== 'submissionId') {
+          const value = Array.isArray(fields[key]) ? fields[key][0] : fields[key]
+          
+          // Try to parse JSON fields
+          if (key === 'experience' || key === 'certifications' || key === 'education' || key === 'references' || key === 'languages' || key === 'visa') {
+            try {
+              studentData[key] = JSON.parse(value)
+            } catch (e) {
+              studentData[key] = value
+            }
+          } else {
+            studentData[key] = value
+          }
+        }
+      })
+
+      // Handle profile picture if uploaded
+      if (files.profilePicture) {
+        const file = Array.isArray(files.profilePicture) ? files.profilePicture[0] : files.profilePicture
+        
+        // Read file and convert to base64
+        const fileBuffer = fs.readFileSync(file.filepath)
+        const base64String = fileBuffer.toString('base64')
+        const mimeType = file.mimetype || 'image/jpeg'
+        
+        studentData.profilePicture = `data:${mimeType};base64,${base64String}`
+        
+        // Clean up temporary file
+        fs.unlinkSync(file.filepath)
+      }
+    }
     
     if (!submissionId) {
       return res.status(400).json({ message: 'Missing submissionId' })
-    }
-
-    // Convert studentData to proper format
-    const studentData = {}
-    Object.keys(fields).forEach(key => {
-      if (key !== 'submissionId') {
-        const value = Array.isArray(fields[key]) ? fields[key][0] : fields[key]
-        
-        // Try to parse JSON fields
-        if (key === 'experience' || key === 'certifications' || key === 'education' || key === 'references' || key === 'languages' || key === 'visa') {
-          try {
-            studentData[key] = JSON.parse(value)
-          } catch (e) {
-            studentData[key] = value
-          }
-        } else {
-          studentData[key] = value
-        }
-      }
-    })
-
-    // Handle profile picture if uploaded
-    if (files.profilePicture) {
-      const file = Array.isArray(files.profilePicture) ? files.profilePicture[0] : files.profilePicture
-      
-      // Read file and convert to base64
-      const fileBuffer = fs.readFileSync(file.filepath)
-      const base64String = fileBuffer.toString('base64')
-      const mimeType = file.mimetype || 'image/jpeg'
-      
-      studentData.profilePicture = `data:${mimeType};base64,${base64String}`
-      
-      // Clean up temporary file
-      fs.unlinkSync(file.filepath)
     }
 
     // Validate required fields
