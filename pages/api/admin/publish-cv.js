@@ -1,5 +1,10 @@
-import fs from 'fs'
-import path from 'path'
+import { createClient } from '@supabase/supabase-js'
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -13,47 +18,25 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing submissionId' })
     }
 
-    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
-    
-    // Check if submissions directory exists
-    if (!fs.existsSync(submissionsDir)) {
-      return res.status(404).json({ message: 'Submission not found' })
-    }
+    // Get the submission from Supabase
+    const { data: submission, error: fetchError } = await supabase
+      .from('submissions')
+      .select('*')
+      .eq('id', submissionId)
+      .single()
 
-    // Read all JSON files and find the one with matching ID
-    const files = fs.readdirSync(submissionsDir).filter(file => file.endsWith('.json'))
-    
-    let submission = null
-    let submissionFile = null
-    
-    for (const file of files) {
-      try {
-        const filePath = path.join(submissionsDir, file)
-        const fileContent = fs.readFileSync(filePath, 'utf8')
-        const fileSubmission = JSON.parse(fileContent)
-        
-        if (fileSubmission.id === submissionId) {
-          submission = fileSubmission
-          submissionFile = file
-          break
-        }
-      } catch (fileError) {
-        console.error(`Error reading file ${file}:`, fileError)
-        // Continue with other files even if one fails
-      }
-    }
-
-    if (!submission) {
+    if (fetchError || !submission) {
+      console.error('Error fetching submission:', fetchError)
       return res.status(404).json({ message: 'Submission not found' })
     }
 
     // Create the CV data for publication
-    const cvData = submission.enhancedData || submission.studentData
+    const cvData = submission.enhanced_data || submission.student_data
     
     // Generate concatenated slug: firstname-lastname-uniqueid
     const firstName = cvData.firstName.toLowerCase().replace(/\s+/g, '-')
     const lastName = cvData.lastName.toLowerCase().replace(/\s+/g, '-')
-    const uniqueId = submission.uniqueId.toLowerCase()
+    const uniqueId = submission.unique_id.toLowerCase()
     const concatenatedSlug = `${firstName}-${lastName}-${uniqueId}`
     
     // Transform the data to match the existing CV format
@@ -90,32 +73,62 @@ export default async function handler(req, res) {
       references: cvData.references?.filter(r => r.name) || []
     }
 
-    // Ensure the published directory exists
-    const publishedDir = path.join(process.cwd(), 'data', 'published')
-    if (!fs.existsSync(publishedDir)) {
-      fs.mkdirSync(publishedDir, { recursive: true })
-    }
+    const publishedAt = new Date().toISOString()
 
-    // Save the published CV to file
-    const publishedFilePath = path.join(publishedDir, `${submission.uniqueId}.json`)
+    // Save the published CV to Supabase
     const publishedData = {
-      uniqueId: submission.uniqueId,
+      unique_id: submission.unique_id,
       slug: concatenatedSlug,
-      cvData: publishedCV,
-      submissionId: submission.id,
-      publishedAt: new Date().toISOString()
+      cv_data: publishedCV,
+      submission_id: submission.id,
+      published_at: publishedAt
     }
 
-    fs.writeFileSync(publishedFilePath, JSON.stringify(publishedData, null, 2))
+    // Check if this CV is already published (upsert)
+    const { data: existingPublished, error: checkError } = await supabase
+      .from('published_cvs')
+      .select('unique_id')
+      .eq('unique_id', submission.unique_id)
+      .single()
 
-    // Update submission status
-    submission.status = 'published'
-    submission.publishedAt = new Date().toISOString()
-    submission.publishedSlug = concatenatedSlug
+    if (checkError && checkError.code !== 'PGRST116') {
+      // PGRST116 means no rows found, which is fine for new publications
+      console.error('Error checking existing published CV:', checkError)
+      throw new Error(`Failed to check existing published CV: ${checkError.message}`)
+    }
 
-    // Write the updated submission back to the file
-    const filePath = path.join(submissionsDir, submissionFile)
-    fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
+    if (existingPublished) {
+      // Update existing published CV
+      const { error: updatePublishedError } = await supabase
+        .from('published_cvs')
+        .update(publishedData)
+        .eq('unique_id', submission.unique_id)
+    } else {
+      // Insert new published CV
+      const { error: insertPublishedError } = await supabase
+        .from('published_cvs')
+        .insert(publishedData)
+
+      if (insertPublishedError) {
+        console.error('Error inserting published CV:', insertPublishedError)
+        throw new Error(`Failed to publish CV: ${insertPublishedError.message}`)
+      }
+    }
+
+    // Update submission status in Supabase
+    const { error: updateSubmissionError } = await supabase
+      .from('submissions')
+      .update({
+        status: 'published',
+        published_at: publishedAt,
+        published_slug: concatenatedSlug
+      })
+      .eq('id', submissionId)
+
+    if (updateSubmissionError) {
+      console.error('Error updating submission status:', updateSubmissionError)
+      throw new Error(`Failed to update submission status: ${updateSubmissionError.message}`)
+    }
 
     res.status(200).json({ 
       message: 'CV published successfully',

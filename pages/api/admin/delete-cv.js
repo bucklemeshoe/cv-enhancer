@@ -1,5 +1,10 @@
-import fs from 'fs'
-import path from 'path'
+import { createClient } from '@supabase/supabase-js'
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
 export default async function handler(req, res) {
   if (req.method !== 'DELETE') {
@@ -14,75 +19,53 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing submissionId' })
     }
 
-    // Find and delete the submission
-    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
-    console.log('Looking for submissions in directory:', submissionsDir)
-    
-    // Check if submissions directory exists
-    if (!fs.existsSync(submissionsDir)) {
-      console.error('Submissions directory does not exist:', submissionsDir)
-      return res.status(500).json({ message: 'Submissions directory not found' })
-    }
-    
-    const files = fs.readdirSync(submissionsDir)
-    console.log('Found files in submissions directory:', files.length)
-    
-    let submission = null
-    let submissionFilePath = null
+    // Get the submission from Supabase first to check if it exists and get details
+    const { data: submission, error: fetchError } = await supabase
+      .from('submissions')
+      .select('*')
+      .eq('id', submissionId)
+      .single()
 
-    for (const file of files) {
-      if (file.endsWith('.json')) {
-        try {
-          const filePath = path.join(submissionsDir, file)
-          const sub = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-          if (sub.id === submissionId) {
-            submission = sub
-            submissionFilePath = filePath
-            break
-          }
-        } catch (fileError) {
-          console.warn(`Error reading file ${file}:`, fileError.message)
-          continue
-        }
-      }
-    }
-
-    if (!submission) {
+    if (fetchError || !submission) {
       console.log('Submission not found for ID:', submissionId)
       return res.status(404).json({ message: 'Submission not found' })
     }
 
-    console.log('Found submission to delete:', submission.studentData?.firstName, submission.studentData?.lastName)
-
-    // Delete the submission file
-    console.log('Deleting submission file:', submissionFilePath)
-    fs.unlinkSync(submissionFilePath)
-    console.log('Submission file deleted successfully')
+    console.log('Found submission to delete:', submission.student_data?.firstName, submission.student_data?.lastName)
 
     // If the CV was published, also delete the published version
-    if (submission.status === 'published' && submission.slug) {
-      console.log('Checking for published CV with slug:', submission.slug)
-      const publishedDir = path.join(process.cwd(), 'data', 'published')
+    if (submission.status === 'published' && submission.unique_id) {
+      console.log('Deleting published CV for unique_id:', submission.unique_id)
       
-      // Check if published directory exists
-      if (fs.existsSync(publishedDir)) {
-        const publishedFilePath = path.join(publishedDir, `${submission.slug}.json`)
-        
-        if (fs.existsSync(publishedFilePath)) {
-          console.log('Deleting published CV file:', publishedFilePath)
-          fs.unlinkSync(publishedFilePath)
-          console.log('Published CV file deleted successfully')
-        } else {
-          console.log('Published CV file not found:', publishedFilePath)
-        }
+      const { error: publishedDeleteError } = await supabase
+        .from('published_cvs')
+        .delete()
+        .eq('unique_id', submission.unique_id)
+
+      if (publishedDeleteError) {
+        console.error('Error deleting published CV:', publishedDeleteError)
+        // Don't fail the entire request if published CV deletion fails
       } else {
-        console.warn('Published directory does not exist:', publishedDir)
+        console.log('Published CV deleted successfully')
       }
     }
 
+    // Delete the submission from Supabase
+    const { error: deleteError } = await supabase
+      .from('submissions')
+      .delete()
+      .eq('id', submissionId)
+
+    if (deleteError) {
+      console.error('Error deleting submission:', deleteError)
+      throw new Error(`Failed to delete submission: ${deleteError.message}`)
+    }
+
+    console.log('Submission deleted successfully')
+
     res.status(200).json({ 
       message: 'CV deleted successfully',
-      deletedSubmission: submission.studentData.firstName + ' ' + submission.studentData.lastName
+      deletedSubmission: submission.student_data.firstName + ' ' + submission.student_data.lastName
     })
 
   } catch (error) {
@@ -93,4 +76,5 @@ export default async function handler(req, res) {
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     })
   }
+} 
 } 
