@@ -1,6 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 import formidable from 'formidable'
+import { createClient } from '@supabase/supabase-js'
+
+// Environment detection
+const isProduction = process.env.NETLIFY || process.env.NODE_ENV === 'production'
+
+// Supabase client (only used in production)
+const supabase = isProduction ? createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+) : null
 
 export const config = {
   api: {
@@ -15,6 +25,7 @@ export default async function handler(req, res) {
 
   try {
     console.log('Submit application request received')
+    console.log('Environment:', isProduction ? 'PRODUCTION (Supabase)' : 'DEVELOPMENT (File-based)')
     // Parse FormData
     const form = formidable({})
     console.log('Parsing FormData...')
@@ -86,33 +97,60 @@ export default async function handler(req, res) {
       }
     }
 
-    // Ensure the data and submissions directories exist
-    const dataDir = path.join(process.cwd(), 'data')
-    const submissionsDir = path.join(dataDir, 'submissions')
-    console.log('Data directory path:', dataDir)
-    console.log('Submissions directory path:', submissionsDir)
-    
-    // Create directories if they don't exist
-    if (!fs.existsSync(dataDir)) {
-      console.log('Creating data directory')
-      fs.mkdirSync(dataDir, { recursive: true })
-    }
-    
-    if (!fs.existsSync(submissionsDir)) {
-      console.log('Creating submissions directory')
-      fs.mkdirSync(submissionsDir, { recursive: true })
-    }
+    if (isProduction) {
+      // PRODUCTION: Store in Supabase
+      console.log('Storing submission in Supabase...')
+      
+      const { data, error } = await supabase
+        .from('cv_submissions')
+        .insert([{
+          id: submissionId,
+          unique_id: uniqueId,
+          submitted_at: submittedAt,
+          status: 'pending',
+          student_data: formData,
+          slug: uniqueId,
+          metadata: submission.metadata
+        }])
+        .select()
+      
+      if (error) {
+        console.error('Supabase insert error:', error)
+        throw new Error(`Failed to store submission in database: ${error.message}`)
+      }
+      
+      console.log(`New submission created in Supabase: ${uniqueId}`)
+      
+    } else {
+      // DEVELOPMENT: Store in local files
+      console.log('Storing submission in local files...')
+      
+      const dataDir = path.join(process.cwd(), 'data')
+      const submissionsDir = path.join(dataDir, 'submissions')
+      console.log('Submissions directory path:', submissionsDir)
+      
+      // Create directories if they don't exist
+      if (!fs.existsSync(dataDir)) {
+        console.log('Creating data directory')
+        fs.mkdirSync(dataDir, { recursive: true })
+      }
+      
+      if (!fs.existsSync(submissionsDir)) {
+        console.log('Creating submissions directory')
+        fs.mkdirSync(submissionsDir, { recursive: true })
+      }
 
-    // Write the submission to a JSON file
-    const filePath = path.join(submissionsDir, filename)
-    console.log('Writing submission to file:', filePath)
-    
-    try {
-      fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
-      console.log(`New submission created: ${uniqueId} - ${filename}`)
-    } catch (writeError) {
-      console.error('Error writing submission file:', writeError)
-      throw new Error(`Failed to write submission file: ${writeError.message}`)
+      // Write the submission to a JSON file
+      const filePath = path.join(submissionsDir, filename)
+      console.log('Writing submission to file:', filePath)
+      
+      try {
+        fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
+        console.log(`New submission created: ${uniqueId} - ${filename}`)
+      } catch (writeError) {
+        console.error('Error writing submission file:', writeError)
+        throw new Error(`Failed to write submission file: ${writeError.message}`)
+      }
     }
 
     // Return success response with the unique ID
