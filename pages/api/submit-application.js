@@ -3,25 +3,35 @@ import path from 'path'
 import formidable from 'formidable'
 import { createClient } from '@supabase/supabase-js'
 
-// Environment detection - Netlify sets several environment variables
-const isProduction = process.env.NETLIFY || 
-                     process.env.NETLIFY_DEV || 
-                     process.env.AWS_LAMBDA_FUNCTION_NAME || 
-                     process.env.NODE_ENV === 'production'
+// Environment detection - Check for read-only filesystem which indicates serverless
+let isProduction = false
+let supabase = null
 
-console.log('Environment check:', {
-  NETLIFY: process.env.NETLIFY,
-  NETLIFY_DEV: process.env.NETLIFY_DEV,
-  AWS_LAMBDA_FUNCTION_NAME: process.env.AWS_LAMBDA_FUNCTION_NAME,
-  NODE_ENV: process.env.NODE_ENV,
-  isProduction
-})
-
-// Supabase client (only used in production)
-const supabase = isProduction ? createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-) : null
+// Try to detect if we're in a read-only environment (like Netlify Functions)
+try {
+  const testPath = path.join(process.cwd(), 'test-write.tmp')
+  require('fs').writeFileSync(testPath, 'test')
+  require('fs').unlinkSync(testPath)
+  isProduction = false // Can write files, so local development
+  console.log('Environment: DEVELOPMENT (can write files)')
+} catch (error) {
+  isProduction = true // Cannot write files, so production
+  console.log('Environment: PRODUCTION (read-only filesystem)')
+  
+  // Initialize Supabase for production
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+    console.log('Supabase client initialized')
+  } else {
+    console.error('Supabase environment variables not found:', {
+      NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+    })
+  }
+}
 
 export const config = {
   api: {
