@@ -14,6 +14,7 @@ export default async function handler(req, res) {
   try {
     const { submissionId } = req.body
     console.log('Delete CV request received for submissionId:', submissionId)
+    console.log('Supabase client initialized:', !!supabase)
 
     if (!submissionId) {
       return res.status(400).json({ message: 'Missing submissionId' })
