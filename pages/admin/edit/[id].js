@@ -532,16 +532,43 @@ export default function EditCV() {
     setIsSubmitting(true)
     
     try {
-      const response = await fetch('/api/admin/update-submission', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          submissionId: id,
-          studentData: formData
+      // Check if there's a file upload
+      const hasFileUpload = formData.profilePicture && typeof formData.profilePicture === 'object' && formData.profilePicture instanceof File
+      
+      let response
+      if (hasFileUpload) {
+        // Use FormData for file uploads
+        const submitData = new FormData()
+        submitData.append('submissionId', id)
+        
+        // Add all form fields
+        Object.keys(formData).forEach(key => {
+          if (key === 'profilePicture') {
+            if (formData.profilePicture) {
+              submitData.append('profilePicture', formData.profilePicture)
+            }
+          } else {
+            submitData.append(key, typeof formData[key] === 'object' ? JSON.stringify(formData[key]) : formData[key])
+          }
         })
-      })
+        
+        response = await fetch('/api/admin/update-submission', {
+          method: 'POST',
+          body: submitData,
+        })
+      } else {
+        // Use JSON for text-only updates
+        response = await fetch('/api/admin/update-submission', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            submissionId: id,
+            studentData: formData
+          })
+        })
+      }
       
       if (response.ok) {
         setSubmitMessage('CV updated successfully!')
