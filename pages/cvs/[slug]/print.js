@@ -1,6 +1,5 @@
 import Head from 'next/head'
-import fs from 'fs'
-import path from 'path'
+import { createClient } from '@supabase/supabase-js'
 
 // Import print-optimized components
 import PrintHeader from '../../../components/print/PrintHeader'
@@ -194,11 +193,21 @@ export async function getServerSideProps(context) {
   const { slug } = context.params
   
   try {
-    // Extract uniqueId from slug (format: firstname-lastname-uniqueid)
-    const slugParts = slug.split('-')
-    const uniqueId = slugParts[slugParts.length - 1]?.toUpperCase()
-    
-    if (!uniqueId) {
+    // Initialize Supabase client
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+
+    // Get published CV from Supabase by slug
+    const { data: publishedCV, error } = await supabase
+      .from('published_cvs')
+      .select('cv_data')
+      .eq('slug', slug)
+      .single()
+
+    if (error || !publishedCV) {
+      console.error('Error loading CV data from Supabase:', error)
       return {
         props: {
           cvData: null,
@@ -207,43 +216,9 @@ export async function getServerSideProps(context) {
       }
     }
 
-    // Read the JSON file for the requested CV
-    const filePath = path.join(process.cwd(), 'data', 'published', `${uniqueId}.json`)
-    
-    if (!fs.existsSync(filePath)) {
-      return {
-        props: {
-          cvData: null,
-          slug
-        }
-      }
-    }
-    
-    const fileContent = fs.readFileSync(filePath, 'utf8')
-    const publishedData = JSON.parse(fileContent)
-
-    // Handle both old format (direct CV data) and new format (wrapped in cvData)
-    let cvData = null
-    if (publishedData.cvData) {
-      // New format: { cvData: {...}, uniqueId: "...", slug: "..." }
-      cvData = publishedData.cvData
-    } else if (publishedData.header) {
-      // Old format: direct CV data object
-      cvData = publishedData
-    }
-
-    if (!cvData) {
-      return {
-        props: {
-          cvData: null,
-          slug
-        }
-      }
-    }
-    
     return {
       props: {
-        cvData: cvData,
+        cvData: publishedCV.cv_data,
         slug
       }
     }
