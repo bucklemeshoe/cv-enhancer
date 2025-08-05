@@ -15,19 +15,7 @@ export default function ReferencesList({ references }) {
             {reference.contact && (
               <p className="text-gray-600">{reference.contact}</p>
             )}
-            {reference.website && (
-              <p className="text-gray-600">
-                <a 
-                  href={reference.website} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                  style={{ color: '#5bb3b8' }}
-                >
-                  LinkedIn Profile
-                </a>
-              </p>
-            )}
+
           </div>
         ))}
       </div>

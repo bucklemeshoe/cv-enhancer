@@ -90,14 +90,6 @@ export default function Header({ header }) {
                   <span>{header.location}</span>
                 </div>
               )}
-              {header.website && (
-                <div className="flex items-center">
-                  <svg className="h-4 w-4 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                  </svg>
-                  <span>{header.website}</span>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -139,14 +131,6 @@ export default function Header({ header }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span>{header.location}</span>
-                </div>
-              )}
-              {header.website && (
-                <div className="flex items-center">
-                  <svg className="h-4 w-4 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                  </svg>
-                  <span>{header.website}</span>
                 </div>
               )}
             </div>
@@ -239,27 +223,7 @@ export default function Header({ header }) {
                   </a>
                 )}
 
-                {header.website && (
-                  <a
-                    href={header.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group"
-                  >
-                    <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 bg-purple-600 rounded-full flex items-center justify-center">
-                      <svg className="h-4 w-4 md:h-5 md:w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                      </svg>
-                    </div>
-                    <div className="ml-3 flex-1">
-                      <p className="text-xs md:text-sm font-medium text-gray-900 group-hover:text-purple-700">Website</p>
-                      <p className="text-xs md:text-sm text-gray-600 truncate">{header.website}</p>
-                    </div>
-                    <svg className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                )}
+
 
                 {header.location && (
                   <div className="flex items-center p-3 bg-gray-50 rounded-lg">

@@ -12,9 +12,7 @@ export default function PrintReferences({ references }) {
             <div className="font-medium text-gray-900">{ref.name}</div>
             <div className="text-gray-700">{ref.roleOrRelation}</div>
             <div className="text-gray-600">{ref.contact}</div>
-            {ref.website && (
-              <div className="text-gray-600 truncate">{ref.website}</div>
-            )}
+
           </div>
         ))}
       </div>

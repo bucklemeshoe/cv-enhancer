@@ -1754,16 +1754,7 @@ export default function EditCV() {
                                     className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                                   />
                                 </div>
-                                <div>
-                                  <label className="block text-xs font-medium text-gray-600 mb-1">Website (optional)</label>
-                                  <input
-                                    type="text"
-                                    value={ref.website}
-                                    onChange={(e) => handleObjectArrayChange('references', index, 'website', e.target.value)}
-                                    placeholder="https://linkedin.com/in/username"
-                                    className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
-                                  />
-                                </div>
+
                               </div>
                               {formData.references.length > 1 && (
                                 <button
@@ -1778,7 +1769,7 @@ export default function EditCV() {
                           ))}
                           <button
                             type="button"
-                            onClick={() => addObjectArrayItem('references', { name: '', roleOrRelation: '', contact: '', website: '' })}
+                            onClick={() => addObjectArrayItem('references', { name: '', roleOrRelation: '', contact: '' })}
                             className="rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors"
                             style={{ backgroundColor: '#14b8a6' }}
                             onMouseEnter={(e) => e.target.style.backgroundColor = '#0d9488'}
