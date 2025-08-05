@@ -14,7 +14,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-console.log('Supabase client initialized:', !!supabase)
+console.log('Supabase client initialized with service role:', !!supabase)
 
 export const config = {
   api: {
