@@ -29,6 +29,8 @@ export default async function handler(req, res) {
 
     if (fetchError || !submission) {
       console.log('Submission not found for ID:', submissionId)
+      console.log('Fetch error:', fetchError)
+      console.log('Submission data:', submission)
       return res.status(404).json({ message: 'Submission not found' })
     }
 
