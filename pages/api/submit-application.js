@@ -104,15 +104,13 @@ export default async function handler(req, res) {
     console.log('Storing submission in Supabase...')
     
     const { data, error } = await supabase
-      .from('cv_submissions')
+      .from('submissions')
       .insert([{
-        id: submissionId,
         unique_id: uniqueId,
         submitted_at: submittedAt,
         status: 'pending',
         student_data: formData,
-        slug: uniqueId,
-        metadata: submission.metadata
+        published_slug: uniqueId
       }])
       .select()
     

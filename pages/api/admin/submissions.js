@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     console.log('Loading submissions from Supabase...')
     
     const { data, error } = await supabase
-      .from('cv_submissions')
+      .from('submissions')
       .select('*')
       .order('submitted_at', { ascending: false })
     
@@ -35,8 +35,8 @@ export default async function handler(req, res) {
       updatedAt: submission.updated_at || submission.submitted_at,
       reviewedAt: submission.reviewed_at || null,
       publishedAt: submission.published_at || null,
-      publishedSlug: submission.published_slug || submission.slug,
-      slug: submission.published_slug || submission.slug
+      publishedSlug: submission.published_slug || submission.unique_id,
+      slug: submission.published_slug || submission.unique_id
     }))
 
     res.status(200).json({ submissions })
