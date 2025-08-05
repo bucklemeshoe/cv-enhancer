@@ -1,0 +1,349 @@
+/* ===================================================================
+   DEDICATED PRINT STYLESHEET FOR CV PRINT PREVIEW
+   This file is ONLY loaded on print preview pages - completely isolated from main CV
+   =================================================================== */
+
+/* A4 Page Setup - Industry Standard */
+@page {
+  size: A4 portrait; /* 210mm x 297mm */
+  margin: 0.75in 0.5in; /* Top/bottom: 0.75", Left/right: 0.5" - standard for resumes */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Root document setup for print */
+html, body {
+  width: 210mm !important;
+  height: 297mm !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  font-size: 11pt !important; /* Standard print font size */
+  line-height: 1.4 !important; /* Optimal for print readability */
+  background: white !important;
+  color: black !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* Print container setup */
+.print-cv {
+  width: 100% !important;
+  height: auto !important;
+  background: white !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.print-container {
+  width: 100% !important;
+  max-width: none !important;
+  background: white !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.print-page {
+  width: 100% !important;
+  min-height: auto !important;
+  background: white !important;
+  position: relative !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Hide elements not needed for print */
+.no-print {
+  display: none !important;
+}
+
+/* Brand color preservation for print */
+.text-teal-600,
+[style*="color: #5bb3b8"],
+.print-accent-color {
+  color: #0d7377 !important; /* Slightly darker for better print contrast */
+}
+
+/* Header Section - Professional Layout */
+.print-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  margin-bottom: 16pt !important;
+  padding-bottom: 8pt !important;
+  border-bottom: 1pt solid #e5e7eb !important;
+  page-break-inside: avoid !important;
+}
+
+.print-header h1 {
+  font-size: 18pt !important;
+  font-weight: bold !important;
+  color: black !important;
+  margin: 0 0 4pt 0 !important;
+  line-height: 1.2 !important;
+}
+
+.print-header .print-title {
+  font-size: 14pt !important;
+  font-weight: 500 !important;
+  color: #0d7377 !important;
+  margin: 0 0 8pt 0 !important;
+  line-height: 1.2 !important;
+}
+
+.print-header .print-contact-info {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8pt !important;
+  font-size: 9pt !important;
+  color: #374151 !important;
+}
+
+.print-header .print-contact-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2pt !important;
+  white-space: nowrap !important;
+}
+
+.print-header .print-contact-item svg {
+  width: 8pt !important;
+  height: 8pt !important;
+  fill: #0d7377 !important;
+}
+
+.print-header .print-photo {
+  flex-shrink: 0 !important;
+  margin-left: 12pt !important;
+}
+
+.print-header .print-photo img {
+  width: 60pt !important;
+  height: 60pt !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 2pt solid #e5e7eb !important;
+}
+
+/* Main Content Layout */
+.print-content {
+  display: grid !important;
+  grid-template-columns: 2fr 1fr !important;
+  gap: 16pt !important;
+  margin: 0 !important;
+}
+
+/* Section Headers */
+.print-section {
+  margin-bottom: 12pt !important;
+  page-break-inside: avoid !important;
+}
+
+.print-section h3,
+.print-section h2 {
+  font-size: 11pt !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5pt !important;
+  margin: 0 0 6pt 0 !important;
+  padding-bottom: 2pt !important;
+  border-bottom: 0.5pt solid #e5e7eb !important;
+  page-break-after: avoid !important;
+}
+
+/* Experience Items */
+.print-experience-item {
+  margin-bottom: 10pt !important;
+  page-break-inside: avoid !important;
+}
+
+.print-experience-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  margin-bottom: 3pt !important;
+}
+
+.print-experience-header h4 {
+  font-size: 10pt !important;
+  font-weight: 600 !important;
+  color: black !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.print-experience-header .print-company {
+  font-size: 9pt !important;
+  color: #0d7377 !important;
+  font-weight: 500 !important;
+}
+
+.print-experience-header .print-dates {
+  font-size: 8pt !important;
+  color: #6b7280 !important;
+  white-space: nowrap !important;
+  margin-left: 8pt !important;
+}
+
+.print-experience-bullets {
+  margin: 3pt 0 0 12pt !important;
+  padding: 0 !important;
+}
+
+.print-experience-bullets li {
+  font-size: 9pt !important;
+  line-height: 1.4 !important;
+  margin-bottom: 2pt !important;
+  page-break-inside: avoid !important;
+  color: #374151 !important;
+}
+
+/* Skills Section */
+.print-skills-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6pt !important;
+  line-height: 1.6 !important;
+}
+
+.print-skill-item {
+  font-size: 9pt !important;
+  font-weight: 500 !important;
+  color: #0d7377 !important;
+  border-bottom: 0.5pt solid #0d7377 !important;
+  padding-bottom: 1pt !important;
+  display: inline-block !important;
+  page-break-inside: avoid !important;
+  white-space: nowrap !important;
+}
+
+/* Contact Information */
+.print-contact {
+  font-size: 9pt !important;
+  line-height: 1.5 !important;
+}
+
+.print-contact-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4pt !important;
+  margin-bottom: 3pt !important;
+  page-break-inside: avoid !important;
+}
+
+.print-contact-item svg {
+  width: 8pt !important;
+  height: 8pt !important;
+  fill: #0d7377 !important;
+  flex-shrink: 0 !important;
+}
+
+.print-contact-item span {
+  color: #374151 !important;
+}
+
+/* Education & Certifications */
+.print-education-item,
+.print-certification-item {
+  margin-bottom: 8pt !important;
+  page-break-inside: avoid !important;
+}
+
+.print-education-item h4,
+.print-certification-item h4 {
+  font-size: 9pt !important;
+  font-weight: 600 !important;
+  color: black !important;
+  margin: 0 0 2pt 0 !important;
+  line-height: 1.3 !important;
+}
+
+.print-education-item .print-institution,
+.print-certification-item .print-issuer {
+  font-size: 8pt !important;
+  color: #0d7377 !important;
+  margin: 0 0 2pt 0 !important;
+}
+
+.print-education-item .print-date,
+.print-certification-item .print-date {
+  font-size: 8pt !important;
+  color: #6b7280 !important;
+}
+
+/* Profile/Summary Section */
+.print-profile {
+  font-size: 9pt !important;
+  line-height: 1.5 !important;
+  color: #374151 !important;
+  text-align: justify !important;
+  margin-bottom: 12pt !important;
+}
+
+/* Hobbies Section */
+.print-hobbies {
+  font-size: 9pt !important;
+  line-height: 1.4 !important;
+  color: #374151 !important;
+}
+
+/* References Section */
+.print-references {
+  font-size: 8pt !important;
+  line-height: 1.4 !important;
+  color: #374151 !important;
+}
+
+/* Typography Control */
+p, li, span, div {
+  orphans: 3 !important;
+  widows: 3 !important;
+}
+
+/* Page Break Control */
+.page-break-before {
+  page-break-before: always !important;
+}
+
+.page-break-after {
+  page-break-after: always !important;
+}
+
+.page-break-inside-avoid {
+  page-break-inside: avoid !important;
+}
+
+/* Wave patterns - simplified for print */
+.print-wave {
+  display: none !important; /* Hide decorative elements in print */
+}
+
+/* Utility Classes */
+.print-hidden {
+  display: none !important;
+}
+
+.print-visible {
+  display: block !important;
+}
+
+/* Ensure no margin collapse issues */
+* {
+  box-sizing: border-box !important;
+}
+
+/* Final adjustments for professional appearance */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Ensure clean page breaks */
+  .print-content > div:first-child > .print-section:last-child {
+    page-break-after: avoid !important;
+  }
+} 

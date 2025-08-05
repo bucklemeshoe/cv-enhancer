@@ -1,10 +1,5 @@
-import { supabase } from '../../lib/supabase'
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+import fs from 'fs'
+import path from 'path'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -16,37 +11,51 @@ export default async function handler(req, res) {
 
     // Generate a unique ID for this submission (6 characters)
     const uniqueId = Math.random().toString(36).substring(2, 8).toUpperCase()
-
-    // Create the submission record in Supabase
-    const { data: submission, error } = await supabase
-      .from('submissions')
-      .insert([{
-        unique_id: uniqueId,
-        student_data: formData,
-        status: 'pending',
-        submitted_at: new Date().toISOString()
-      }])
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Supabase insert error:', error)
-      
-      // Handle unique constraint violations
-      if (error.code === '23505') {
-        return res.status(409).json({ message: 'Submission ID conflict, please try again' })
+    
+    // Create timestamp for the submission
+    const submittedAt = new Date().toISOString()
+    const timestamp = submittedAt.replace(/[:.]/g, '-')
+    
+    // Create the submission ID
+    const submissionId = `${timestamp}_${uniqueId}`
+    
+    // Create the filename based on the student's name
+    const firstName = formData.firstName || 'unknown'
+    const lastName = formData.lastName || 'user'
+    const filename = `${firstName.toLowerCase()}-${lastName.toLowerCase()}-${uniqueId.toLowerCase()}.json`
+    
+    // Create the submission object
+    const submission = {
+      id: submissionId,
+      uniqueId: uniqueId,
+      submittedAt: submittedAt,
+      status: 'pending',
+      studentData: formData,
+      slug: uniqueId,
+      metadata: {
+        submissionDate: submittedAt,
+        ipAddress: req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown',
+        userAgent: req.headers['user-agent'] || 'unknown'
       }
-      
-      return res.status(500).json({ message: `Database error: ${error.message}` })
     }
 
-    console.log(`New submission created: ${uniqueId}`)
+    // Ensure the submissions directory exists
+    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
+    if (!fs.existsSync(submissionsDir)) {
+      fs.mkdirSync(submissionsDir, { recursive: true })
+    }
+
+    // Write the submission to a JSON file
+    const filePath = path.join(submissionsDir, filename)
+    fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
+
+    console.log(`New submission created: ${uniqueId} - ${filename}`)
 
     // Return success response with the unique ID
     res.status(200).json({ 
       message: 'Application submitted successfully!',
       uniqueId: uniqueId,
-      submissionId: submission.id
+      submissionId: submissionId
     })
 
   } catch (error) {

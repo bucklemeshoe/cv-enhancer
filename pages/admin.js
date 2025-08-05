@@ -668,6 +668,7 @@ export default function Admin() {
                                 transition
                                 className="absolute right-0 z-10 mt-2 w-44 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
                               >
+                                {/* Import/Export functionality temporarily hidden
                                 <MenuItem>
                                   <button
                                     onClick={() => exportJSON(submission)}
@@ -698,6 +699,7 @@ export default function Admin() {
                                     </label>
                                   </div>
                                 </MenuItem>
+                                */}
                                 <MenuItem>
                                   {(() => {
                                     const completionPercentage = calculateCompletionPercentage(submission.studentData)

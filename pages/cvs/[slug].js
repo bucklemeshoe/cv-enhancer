@@ -114,15 +114,94 @@ export default function CVPage({ cvData, slug }) {
 
         {/* Print Instructions */}
         <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 print:hidden">
-          <button 
-            onClick={() => window.print()}
-            className="text-white px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium"
-            style={{ backgroundColor: '#255156' }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#1e4147'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#255156'}
-          >
-            Print CV
-          </button>
+          <div className="space-y-2">
+            <button 
+              onClick={() => window.open(`/cvs/${slug}/print`, '_blank')}
+              className="block w-full text-white px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium"
+              style={{ backgroundColor: '#255156' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#1e4147'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#255156'}
+            >
+              🖨️ Print CV
+            </button>
+            <button 
+              onClick={async (event) => {
+                try {
+                  // Dynamically import the libraries
+                  const html2canvas = (await import('html2canvas')).default;
+                  const jsPDF = (await import('jspdf')).jsPDF;
+                  
+                  // Show loading state
+                  const button = event.target;
+                  const originalText = button.textContent;
+                  button.textContent = '⏳ Generating PDF...';
+                  button.disabled = true;
+                  
+                  // Hide the print buttons temporarily
+                  const printButtons = document.querySelector('.fixed.bottom-4');
+                  printButtons.style.display = 'none';
+                  
+                  // Capture the CV content
+                  const cvElement = document.querySelector('main');
+                  const canvas = await html2canvas(cvElement, {
+                    scale: 2, // Higher quality
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: cvElement.scrollWidth,
+                    height: cvElement.scrollHeight
+                  });
+                  
+                  // Show print buttons again
+                  printButtons.style.display = 'block';
+                  
+                  // Create PDF
+                  const imgData = canvas.toDataURL('image/png');
+                  const pdf = new jsPDF('p', 'mm', 'a4');
+                  
+                  // Calculate dimensions to fit A4
+                  const pdfWidth = pdf.internal.pageSize.getWidth();
+                  const pdfHeight = pdf.internal.pageSize.getHeight();
+                  const imgWidth = canvas.width;
+                  const imgHeight = canvas.height;
+                  const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                  const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                  const imgY = 0;
+                  
+                  pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+                  
+                  // Generate filename
+                  const name = cvData?.header?.name?.replace(/\s+/g, '-') || 'cv';
+                  const fileName = `${name}-CV.pdf`;
+                  
+                  // Download PDF
+                  pdf.save(fileName);
+                  
+                  // Reset button
+                  button.textContent = originalText;
+                  button.disabled = false;
+                  
+                } catch (error) {
+                  console.error('PDF generation failed:', error);
+                  alert('Failed to generate PDF. Please try again or use the print option.');
+                  // Reset button on error
+                  event.target.textContent = '📥 Download PDF';
+                  event.target.disabled = false;
+                  // Show print buttons again
+                  document.querySelector('.fixed.bottom-4').style.display = 'block';
+                }
+              }}
+              className="block w-full text-white px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium bg-green-600 hover:bg-green-700"
+            >
+              📥 Download PDF
+            </button>
+            <button 
+              onClick={() => window.print()}
+              className="block w-full text-gray-700 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium bg-white border border-gray-300 hover:bg-gray-50"
+            >
+              📄 Quick Print
+            </button>
+          </div>
         </div>
       </main>
     </>

@@ -103,15 +103,23 @@ export default function CV() {
 
         {/* Print Instructions */}
         <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 print:hidden">
-          <button 
-            onClick={() => window.print()}
-            className="text-white px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium"
-            style={{ backgroundColor: '#255156' }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#1e4147'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#255156'}
-          >
-            Print CV
-          </button>
+          <div className="space-y-2">
+            <button 
+              onClick={() => window.open('/cvs/jared-smith/print', '_blank')}
+              className="block w-full text-white px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium"
+              style={{ backgroundColor: '#255156' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#1e4147'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#255156'}
+            >
+              🖨️ Print CV
+            </button>
+            <button 
+              onClick={() => window.print()}
+              className="block w-full text-gray-700 px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium bg-white border border-gray-300 hover:bg-gray-50"
+            >
+              📄 Quick Print
+            </button>
+          </div>
         </div>
       </main>
     </>

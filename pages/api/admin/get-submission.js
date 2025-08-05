@@ -1,4 +1,5 @@
-import { supabase } from '../../../lib/supabase'
+import fs from 'fs'
+import path from 'path'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,40 +13,51 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing submission ID' })
     }
 
-    // Fetch the specific submission from Supabase
-    const { data: submission, error } = await supabase
-      .from('submissions')
-      .select('*')
-      .eq('id', id)
-      .single()
+    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
+    
+    // Check if submissions directory exists
+    if (!fs.existsSync(submissionsDir)) {
+      return res.status(404).json({ message: 'Submission not found' })
+    }
 
-    if (error) {
-      console.error('Supabase fetch error:', error)
-      
-      if (error.code === 'PGRST116') {
-        return res.status(404).json({ message: 'Submission not found' })
+    // Read all JSON files and find the one with matching ID
+    const files = fs.readdirSync(submissionsDir).filter(file => file.endsWith('.json'))
+    
+    let submission = null
+    
+    for (const file of files) {
+      try {
+        const filePath = path.join(submissionsDir, file)
+        const fileContent = fs.readFileSync(filePath, 'utf8')
+        const fileSubmission = JSON.parse(fileContent)
+        
+        if (fileSubmission.id === id) {
+          submission = fileSubmission
+          break
+        }
+      } catch (fileError) {
+        console.error(`Error reading file ${file}:`, fileError)
+        // Continue with other files even if one fails
       }
-      
-      return res.status(500).json({ message: `Database error: ${error.message}` })
     }
 
     if (!submission) {
       return res.status(404).json({ message: 'Submission not found' })
     }
 
-    // Transform data to match the existing format expected by the frontend
+    // Transform data to match the expected format
     const transformedSubmission = {
       id: submission.id,
-      uniqueId: submission.unique_id,
-      studentData: submission.student_data,
-      enhancedData: submission.enhanced_data,
+      uniqueId: submission.uniqueId,
+      studentData: submission.studentData,
+      enhancedData: submission.enhancedData || null,
       status: submission.status,
-      submittedAt: submission.submitted_at,
-      updatedAt: submission.updated_at,
-      reviewedAt: submission.reviewed_at,
-      publishedAt: submission.published_at,
-      publishedSlug: submission.published_slug,
-      slug: submission.published_slug
+      submittedAt: submission.submittedAt,
+      updatedAt: submission.updatedAt || submission.submittedAt,
+      reviewedAt: submission.reviewedAt || null,
+      publishedAt: submission.publishedAt || null,
+      publishedSlug: submission.publishedSlug || submission.slug,
+      slug: submission.publishedSlug || submission.slug
     }
 
     res.status(200).json({ submission: transformedSubmission })

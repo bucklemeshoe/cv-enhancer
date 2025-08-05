@@ -1,4 +1,5 @@
-import { supabase } from '../../../lib/supabase'
+import fs from 'fs'
+import path from 'path'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -6,33 +7,48 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Fetch all submissions from Supabase, ordered by newest first
-    const { data: submissions, error } = await supabase
-      .from('submissions')
-      .select('*')
-      .order('submitted_at', { ascending: false })
-
-    if (error) {
-      console.error('Supabase fetch error:', error)
-      return res.status(500).json({ message: `Database error: ${error.message}` })
+    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
+    
+    // Check if submissions directory exists
+    if (!fs.existsSync(submissionsDir)) {
+      return res.status(200).json({ submissions: [] })
     }
 
-    // Transform data to match the existing format expected by the frontend
-    const transformedSubmissions = submissions.map(submission => ({
-      id: submission.id,
-      uniqueId: submission.unique_id,
-      studentData: submission.student_data,
-      enhancedData: submission.enhanced_data,
-      status: submission.status,
-      submittedAt: submission.submitted_at,
-      updatedAt: submission.updated_at,
-      reviewedAt: submission.reviewed_at,
-      publishedAt: submission.published_at,
-      publishedSlug: submission.published_slug,
-      slug: submission.published_slug
-    }))
+    // Read all JSON files from the submissions directory
+    const files = fs.readdirSync(submissionsDir).filter(file => file.endsWith('.json'))
+    
+    const submissions = []
+    
+    for (const file of files) {
+      try {
+        const filePath = path.join(submissionsDir, file)
+        const fileContent = fs.readFileSync(filePath, 'utf8')
+        const submission = JSON.parse(fileContent)
+        
+        // Transform data to match the expected format
+        submissions.push({
+          id: submission.id,
+          uniqueId: submission.uniqueId,
+          studentData: submission.studentData,
+          enhancedData: submission.enhancedData || null,
+          status: submission.status,
+          submittedAt: submission.submittedAt,
+          updatedAt: submission.updatedAt || submission.submittedAt,
+          reviewedAt: submission.reviewedAt || null,
+          publishedAt: submission.publishedAt || null,
+          publishedSlug: submission.publishedSlug || submission.slug,
+          slug: submission.publishedSlug || submission.slug
+        })
+      } catch (fileError) {
+        console.error(`Error reading file ${file}:`, fileError)
+        // Continue with other files even if one fails
+      }
+    }
 
-    res.status(200).json({ submissions: transformedSubmissions })
+    // Sort by submittedAt (newest first)
+    submissions.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+
+    res.status(200).json({ submissions })
 
   } catch (error) {
     console.error('Error loading submissions:', error)

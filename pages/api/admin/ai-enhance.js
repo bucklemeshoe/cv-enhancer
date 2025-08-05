@@ -25,14 +25,20 @@ export default async function handler(req, res) {
       profile: `
         Polish this yacht crew professional profile summary to improve clarity and professionalism.
         
+        Context information:
+        - Name: ${context.firstName} ${context.lastName}
+        - Target Role: ${context.targetRole}
+        
         Guidelines:
-        - Improve grammar and sentence structure only
+        - Improve grammar and sentence structure
         - Use professional language and yacht industry terms where appropriate
-        - Keep the same core content and experiences mentioned
-        - Do not add new experiences, skills, or qualifications not mentioned
-        - Keep it concise (2-3 sentences maximum)
-        - Do not add emojis or overly enthusiastic language
+        - If the current profile is short (under 320 characters), expand it using the context information to create a more comprehensive professional summary
+        - For short profiles, incorporate relevant details about their target role and professional aspirations in the yacht industry
+        - Keep the same core content and experiences mentioned, but enhance with professional context
+        - Do not add fake experiences, but you can reference their target role and industry knowledge
         - Maintain professional, factual tone
+        - Do not add emojis or overly enthusiastic language
+        - Aim for at least 320 characters for short profiles while keeping longer ones appropriately concise
         
         Current profile: "${content}"
         
@@ -40,20 +46,27 @@ export default async function handler(req, res) {
       `,
       
       hobbies: `
-        Format this hobbies and interests text into proper comma-separated values.
+        Convert this hobbies and interests text into a clean, professional comma-separated list.
         
         Guidelines:
-        - Convert the text into a clean, comma-separated list
-        - Keep the exact same hobbies and interests mentioned
+        - Transform descriptive phrases into simple activity names (e.g., "I like to fish" becomes "Fishing")
+        - Convert sentences into noun-based activities (e.g., "I enjoy playing football" becomes "Football")
+        - Keep the same hobbies and interests mentioned, just reformat them
         - Do not add new hobbies or interests
         - Remove any bullet points, numbers, or other formatting
         - Ensure each item is separated by a comma and space
-        - Keep the original wording as much as possible
+        - Use professional, concise activity names
+        - Capitalize the first letter of each activity
         - Do not add emojis or extra descriptive words
+        
+        Examples:
+        - "I like to fish and go swimming" → "Fishing, Swimming"
+        - "Playing guitar, I enjoy hiking" → "Guitar, Hiking"
+        - "Love reading books and cooking meals" → "Reading, Cooking"
         
         Current text: "${content}"
         
-        Return only the comma-separated list, no extra formatting.
+        Return only the comma-separated list of activity names, no extra formatting.
       `,
       
       experience: `
@@ -93,7 +106,7 @@ export default async function handler(req, res) {
         }
       ],
       temperature: 0.7,
-      max_tokens: 500
+      max_tokens: 800
     })
 
     const enhancedContent = response.choices[0].message.content.trim()

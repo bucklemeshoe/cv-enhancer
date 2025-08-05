@@ -85,6 +85,7 @@ export default function EditCV() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [originalFormData, setOriginalFormData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isPublished, setIsPublished] = useState(false)
 
   // Simple password protection (in production, use proper authentication)
   const ADMIN_PASSWORD = 'cvadmin2024' // Change this to a secure password
@@ -386,6 +387,9 @@ export default function EditCV() {
       if (response.ok) {
         const { submission } = await response.json()
         const data = submission.studentData || {}
+        
+        // Check if CV is published
+        setIsPublished(submission.status === 'published')
         
         setFormData({
           // Personal Information
@@ -949,6 +953,9 @@ export default function EditCV() {
                     <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                       <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
                         First name
+                        {isPublished && (
+                          <span className="text-xs text-amber-600 block mt-1">🔒 Cannot edit after publication</span>
+                        )}
                       </label>
                       <div className="mt-2 sm:col-span-2 sm:mt-0">
                         <input
@@ -958,14 +965,25 @@ export default function EditCV() {
                           value={formData.firstName}
                           onChange={handleInputChange}
                           required
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                          disabled={isPublished}
+                          className={`block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6 ${
+                            isPublished ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+                          }`}
                         />
+                        {isPublished && (
+                          <p className="mt-1 text-sm text-amber-600">
+                            The first name cannot be changed after the CV has been published because it's part of the public URL.
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                       <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
                         Last name
+                        {isPublished && (
+                          <span className="text-xs text-amber-600 block mt-1">🔒 Cannot edit after publication</span>
+                        )}
                       </label>
                       <div className="mt-2 sm:col-span-2 sm:mt-0">
                         <input
@@ -975,8 +993,16 @@ export default function EditCV() {
                           value={formData.lastName}
                           onChange={handleInputChange}
                           required
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                          disabled={isPublished}
+                          className={`block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6 ${
+                            isPublished ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+                          }`}
                         />
+                        {isPublished && (
+                          <p className="mt-1 text-sm text-amber-600">
+                            The last name cannot be changed after the CV has been published because it's part of the public URL.
+                          </p>
+                        )}
                       </div>
                     </div>
 

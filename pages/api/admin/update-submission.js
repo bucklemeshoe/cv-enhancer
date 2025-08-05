@@ -1,4 +1,5 @@
-import { supabase } from '../../../lib/supabase'
+import fs from 'fs'
+import path from 'path'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -17,42 +18,59 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing required fields: firstName, lastName, and email are required' })
     }
 
-    // Update the submission in Supabase
-    const { data, error } = await supabase
-      .from('submissions')
-      .update({ 
-        student_data: studentData,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', submissionId)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Supabase update error:', error)
-      
-      if (error.code === 'PGRST116') {
-        return res.status(404).json({ message: 'Submission not found' })
-      }
-      
-      return res.status(500).json({ message: `Database error: ${error.message}` })
-    }
-
-    if (!data) {
+    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
+    
+    // Check if submissions directory exists
+    if (!fs.existsSync(submissionsDir)) {
       return res.status(404).json({ message: 'Submission not found' })
     }
 
+    // Read all JSON files and find the one with matching ID
+    const files = fs.readdirSync(submissionsDir).filter(file => file.endsWith('.json'))
+    
+    let submission = null
+    let submissionFile = null
+    
+    for (const file of files) {
+      try {
+        const filePath = path.join(submissionsDir, file)
+        const fileContent = fs.readFileSync(filePath, 'utf8')
+        const fileSubmission = JSON.parse(fileContent)
+        
+        if (fileSubmission.id === submissionId) {
+          submission = fileSubmission
+          submissionFile = file
+          break
+        }
+      } catch (fileError) {
+        console.error(`Error reading file ${file}:`, fileError)
+        // Continue with other files even if one fails
+      }
+    }
+
+    if (!submission) {
+      return res.status(404).json({ message: 'Submission not found' })
+    }
+
+    // Update the submission data
+    submission.studentData = studentData
+    submission.updatedAt = new Date().toISOString()
+
+    // Write the updated submission back to the file
+    const filePath = path.join(submissionsDir, submissionFile)
+    fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
+
     // If this submission is published, also update the published CV
-    if (data.status === 'published') {
-      console.log('Updating published CV for:', data.unique_id)
+    if (submission.status === 'published') {
+      console.log('Updating published CV for:', submission.uniqueId)
       
       // Use the latest student data (could be enhanced_data or student_data)
-      const cvData = data.enhanced_data || data.student_data
+      const cvData = submission.enhancedData || submission.studentData
       
       // Generate the same slug format as publish-cv.js
       const firstName = cvData.firstName.toLowerCase().replace(/\s+/g, '-')
       const lastName = cvData.lastName.toLowerCase().replace(/\s+/g, '-')
-      const uniqueId = data.unique_id.toLowerCase()
+      const uniqueId = submission.uniqueId.toLowerCase()
       const concatenatedSlug = `${firstName}-${lastName}-${uniqueId}`
       
       // Transform the data to match the existing CV format (same as publish-cv.js)
@@ -89,25 +107,26 @@ export default async function handler(req, res) {
         references: cvData.references?.filter(r => r.name) || []
       }
 
-      // Update the published CV
-      const { error: publishError } = await supabase
-        .from('published_cvs')
-        .update({
-          slug: concatenatedSlug,
-          cv_data: publishedCV,
-          updated_at: new Date().toISOString()
-        })
-        .eq('unique_id', data.unique_id)
-
-      if (publishError) {
-        console.error('Error updating published CV:', publishError)
-        // Don't fail the whole request, just log the error
-      } else {
-        console.log('✅ Published CV updated successfully')
+      // Update the published CV file
+      const publishedDir = path.join(process.cwd(), 'data', 'published')
+      if (!fs.existsSync(publishedDir)) {
+        fs.mkdirSync(publishedDir, { recursive: true })
       }
+
+      const publishedFilePath = path.join(publishedDir, `${submission.uniqueId}.json`)
+      const publishedData = {
+        uniqueId: submission.uniqueId,
+        slug: concatenatedSlug,
+        cvData: publishedCV,
+        publishedAt: submission.publishedAt,
+        updatedAt: new Date().toISOString()
+      }
+
+      fs.writeFileSync(publishedFilePath, JSON.stringify(publishedData, null, 2))
+      console.log('✅ Published CV updated successfully')
     }
 
-    res.status(200).json({ message: 'Submission updated successfully', submission: data })
+    res.status(200).json({ message: 'Submission updated successfully', submission })
 
   } catch (error) {
     console.error('Error updating submission:', error)

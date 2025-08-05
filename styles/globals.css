@@ -204,8 +204,251 @@ input[type="radio"]:hover {
     background: #f0f9ff !important;
     border: 1px solid #e5e7eb !important;
   }
+
+  /* Print-specific styles for new print layout */
+  .no-print {
+    display: none !important;
+  }
   
-  .text-green-800 {
+  .print-cv {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+  
+  .print-container {
+    padding: 0.5in 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  
+  .print-page {
+    height: 11.7in !important;
+    width: 8.3in !important;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    position: relative !important;
+  }
+  
+  .print-content {
+    height: 100% !important;
+  }
+  
+  .print-section {
+    page-break-inside: avoid !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .print-header {
+    margin-bottom: 24px !important;
+  }
+  
+  /* Compact text sizing for print */
+  .print-cv h1 {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .print-cv h2 {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+  }
+  
+  .print-cv h3 {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .print-cv p {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 6px !important;
+  }
+  
+  /* Remove extra spacing */
+  .print-cv .mb-6 {
+    margin-bottom: 24px !important;
+  }
+  
+  .print-cv .mt-8 {
+    margin-top: 32px !important;
+  }
+  
+  .print-cv .mt-12 {
+    margin-top: 48px !important;
+  }
+  
+  /* Print-specific wave styling */
+  .print-cv svg {
+    height: 40px !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* Force wave backgrounds to print */
+  .print-cv .print-wave,
+  .print-cv .print-wave *,
+  .print-cv .absolute {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  .print-cv .-mt-8 {
+    margin-top: -32px !important;
+  }
+  
+  .print-cv .mx-6 {
+    margin-left: 24px !important;
+    margin-right: 24px !important;
+  }
+  
+  .print-cv .relative {
+    position: relative !important;
+  }
+  
+  .print-cv .absolute {
+    position: absolute !important;
+  }
+  
+  .print-cv .top-0 {
+    top: 0 !important;
+  }
+  
+  .print-cv .bottom-0 {
+    bottom: 0 !important;
+  }
+  
+  /* Ensure bottom wave stays at page bottom */
+  .print-cv .print-page .absolute.bottom-0 {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+  
+  .print-cv .left-0 {
+    left: 0 !important;
+  }
+  
+  .print-cv .w-full {
+    width: 100% !important;
+  }
+  
+  .print-cv .z-0 {
+    z-index: 0 !important;
+  }
+  
+  .print-cv .z-10 {
+    z-index: 10 !important;
+  }
+  
+  .print-cv .pt-4 {
+    padding-top: 16px !important;
+  }
+  
+  .print-cv .mb-4 {
+    margin-bottom: 16px !important;
+  }
+  
+  .print-cv .mb-2 {
+    margin-bottom: 8px !important;
+  }
+  
+  .print-cv .mb-3 {
+    margin-bottom: 12px !important;
+  }
+  
+  .print-cv .leading-tight {
+    line-height: 1.1 !important;
+  }
+  
+  .print-cv .space-y-6 > * + * {
+    margin-top: 16px !important;
+  }
+  
+  .print-cv .space-y-5 > * + * {
+    margin-top: 12px !important;
+  }
+  
+  .print-cv .space-y-4 > * + * {
+    margin-top: 10px !important;
+  }
+  
+  .print-cv .space-y-3 > * + * {
+    margin-top: 8px !important;
+  }
+  
+  .print-cv .space-y-2\.5 > * + * {
+    margin-top: 6px !important;
+  }
+  
+  .print-cv .space-y-2 > * + * {
+    margin-top: 5px !important;
+  }
+  
+  .print-cv .space-y-1\.5 > * + * {
+    margin-top: 3px !important;
+  }
+  
+  .print-cv .space-y-1 > * + * {
+    margin-top: 2px !important;
+  }
+  
+  .print-cv .mb-1 {
+    margin-bottom: 4px !important;
+  }
+  
+  .print-cv .-mt-1 {
+    margin-top: -4px !important;
+  }
+  
+  /* Grid adjustments for print */
+  .print-cv .grid {
+    gap: 16px !important;
+  }
+  
+  /* Ensure proper borders in print */
+  .border-b-2 {
+    border-bottom: 2px solid #000 !important;
+  }
+  
+  .border-b {
+    border-bottom: 1px solid #d1d5db !important;
+  }
+  
+  .border-gray-300 {
+    border-color: #d1d5db !important;
+  }
+
+/* Simple print support - print exactly what's on screen */
+@media print {
+  /* Hide print controls */
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Force all colors and backgrounds to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* Ensure page breaks nicely */
+  .print-section {
+    page-break-inside: avoid !important;
+  }
+}
+
+/* Screen-only hidden class */
+.hidden {
+  display: none !important;
+}
+
+.text-green-800 {
     color: #1f2937 !important;
   }
   

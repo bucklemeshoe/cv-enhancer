@@ -34,9 +34,9 @@ async function migrateSubmissions() {
       const fileContent = fs.readFileSync(filePath, 'utf8')
       const submission = JSON.parse(fileContent)
       
-      // Transform to match database schema
+      // Transform to match database schema (generate new UUID for id)
       const dbSubmission = {
-        id: submission.id,
+        // Don't include id - let database auto-generate UUID
         unique_id: submission.uniqueId,
         student_data: submission.studentData,
         enhanced_data: submission.enhancedData || null,
@@ -48,11 +48,11 @@ async function migrateSubmissions() {
         published_slug: submission.publishedSlug || null
       }
 
-      // Insert into Supabase (use upsert to handle duplicates)
+      // Insert into Supabase (use upsert to handle duplicates by unique_id)
       const { error } = await supabase
         .from('submissions')
         .upsert([dbSubmission], { 
-          onConflict: 'id',
+          onConflict: 'unique_id',
           ignoreDuplicates: false 
         })
 
