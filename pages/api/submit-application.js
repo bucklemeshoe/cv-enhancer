@@ -77,30 +77,6 @@ export default async function handler(req, res) {
     
     // Create timestamp for the submission
     const submittedAt = new Date().toISOString()
-    const timestamp = submittedAt.replace(/[:.]/g, '-')
-    
-    // Create the submission ID
-    const submissionId = `${timestamp}_${uniqueId}`
-    
-    // Create the filename based on the student's name
-    const firstName = formData.firstName || 'unknown'
-    const lastName = formData.lastName || 'user'
-    const filename = `${firstName.toLowerCase()}-${lastName.toLowerCase()}-${uniqueId.toLowerCase()}.json`
-    
-    // Create the submission object
-    const submission = {
-      id: submissionId,
-      uniqueId: uniqueId,
-      submittedAt: submittedAt,
-      status: 'pending',
-      studentData: formData,
-      slug: uniqueId,
-      metadata: {
-        submissionDate: submittedAt,
-        ipAddress: req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown',
-        userAgent: req.headers['user-agent'] || 'unknown'
-      }
-    }
 
     // Store in Supabase
     console.log('Storing submission in Supabase...')
@@ -123,11 +99,11 @@ export default async function handler(req, res) {
     
     console.log(`New submission created in Supabase: ${uniqueId}`)
 
-    // Return success response with the unique ID
+    // Return success response with the actual database ID
     res.status(200).json({ 
       message: 'Application submitted successfully!',
       uniqueId: uniqueId,
-      submissionId: submissionId
+      submissionId: data[0].id  // Use the actual database ID from Supabase
     })
 
   } catch (error) {
