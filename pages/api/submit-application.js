@@ -3,8 +3,19 @@ import path from 'path'
 import formidable from 'formidable'
 import { createClient } from '@supabase/supabase-js'
 
-// Environment detection
-const isProduction = process.env.NETLIFY || process.env.NODE_ENV === 'production'
+// Environment detection - Netlify sets several environment variables
+const isProduction = process.env.NETLIFY || 
+                     process.env.NETLIFY_DEV || 
+                     process.env.AWS_LAMBDA_FUNCTION_NAME || 
+                     process.env.NODE_ENV === 'production'
+
+console.log('Environment check:', {
+  NETLIFY: process.env.NETLIFY,
+  NETLIFY_DEV: process.env.NETLIFY_DEV,
+  AWS_LAMBDA_FUNCTION_NAME: process.env.AWS_LAMBDA_FUNCTION_NAME,
+  NODE_ENV: process.env.NODE_ENV,
+  isProduction
+})
 
 // Supabase client (only used in production)
 const supabase = isProduction ? createClient(

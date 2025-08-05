@@ -2,8 +2,11 @@ import fs from 'fs'
 import path from 'path'
 import { createClient } from '@supabase/supabase-js'
 
-// Environment detection
-const isProduction = process.env.NETLIFY || process.env.NODE_ENV === 'production'
+// Environment detection - Netlify sets several environment variables
+const isProduction = process.env.NETLIFY || 
+                     process.env.NETLIFY_DEV || 
+                     process.env.AWS_LAMBDA_FUNCTION_NAME || 
+                     process.env.NODE_ENV === 'production'
 
 // Supabase client (only used in production)
 const supabase = isProduction ? createClient(
