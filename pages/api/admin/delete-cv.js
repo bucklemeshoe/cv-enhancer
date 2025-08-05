@@ -21,17 +21,33 @@ export default async function handler(req, res) {
     }
 
     // Get the submission from Supabase first to check if it exists and get details
+    console.log('Querying Supabase for submission with ID:', submissionId)
+    console.log('ID type:', typeof submissionId)
+    console.log('ID length:', submissionId?.length)
+    
     const { data: submission, error: fetchError } = await supabase
       .from('submissions')
       .select('*')
       .eq('id', submissionId)
       .single()
 
+    console.log('Supabase query result:')
+    console.log('- Data:', submission)
+    console.log('- Error:', fetchError)
+    console.log('- Error code:', fetchError?.code)
+    console.log('- Error message:', fetchError?.message)
+    console.log('- Error details:', fetchError?.details)
+
     if (fetchError || !submission) {
       console.log('Submission not found for ID:', submissionId)
-      console.log('Fetch error:', fetchError)
-      console.log('Submission data:', submission)
-      return res.status(404).json({ message: 'Submission not found' })
+      return res.status(404).json({ 
+        message: 'Submission not found',
+        debug: {
+          submissionId,
+          error: fetchError,
+          hasData: !!submission
+        }
+      })
     }
 
     console.log('Found submission to delete:', submission.student_data?.firstName, submission.student_data?.lastName)
