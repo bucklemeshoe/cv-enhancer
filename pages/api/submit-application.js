@@ -14,6 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('Submit application request received')
     // Parse FormData
     const form = formidable({})
     const [fields, files] = await form.parse(req)
@@ -82,12 +83,16 @@ export default async function handler(req, res) {
 
     // Ensure the submissions directory exists
     const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
+    console.log('Submissions directory path:', submissionsDir)
+    
     if (!fs.existsSync(submissionsDir)) {
+      console.log('Creating submissions directory')
       fs.mkdirSync(submissionsDir, { recursive: true })
     }
 
     // Write the submission to a JSON file
     const filePath = path.join(submissionsDir, filename)
+    console.log('Writing submission to file:', filePath)
     fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
 
     console.log(`New submission created: ${uniqueId} - ${filename}`)
@@ -101,6 +106,10 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error submitting application:', error)
-    res.status(500).json({ message: `Internal server error: ${error.message}` })
+    res.status(500).json({ 
+      message: 'Internal server error',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    })
   }
 } 

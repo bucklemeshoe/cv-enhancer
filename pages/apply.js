@@ -131,7 +131,9 @@ export default function Apply() {
       }
     })
 
-    return Math.round((completedFields / totalFields) * 100)
+    const percentage = Math.round((completedFields / totalFields) * 100)
+    console.log(`Completion: ${completedFields}/${totalFields} = ${percentage}%`)
+    return percentage
   }
 
   const completionPercentage = calculateCompletionPercentage()
@@ -1254,24 +1256,29 @@ export default function Apply() {
                       type="submit"
                       disabled={isSubmitting}
                       className="inline-flex justify-center items-center rounded-md px-4 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      style={{ backgroundColor: isSubmitting ? '#6b7280' : completionPercentage >= 100 ? '#059669' : '#14b8a6' }}
+                      style={{ backgroundColor: isSubmitting ? '#6b7280' : completionPercentage >= 85 ? '#059669' : '#14b8a6' }}
                       onMouseEnter={(e) => {
-                        if (!isSubmitting) e.target.style.backgroundColor = completionPercentage >= 100 ? '#047857' : '#0d9488'
+                        if (!isSubmitting) e.target.style.backgroundColor = completionPercentage >= 85 ? '#047857' : '#0d9488'
                       }}
                       onMouseLeave={(e) => {
-                        if (!isSubmitting) e.target.style.backgroundColor = completionPercentage >= 100 ? '#059669' : '#14b8a6'
+                        if (!isSubmitting) e.target.style.backgroundColor = completionPercentage >= 85 ? '#059669' : '#14b8a6'
                       }}
                     >
-                      {isSubmitting ? 'Submitting...' : completionPercentage >= 100 ? 'Submit for Publishing' : 'Submit Application'}
-                      {completionPercentage >= 100 && !isSubmitting && (
+                      {isSubmitting ? 'Submitting...' : completionPercentage >= 85 ? 'Submit Application' : 'Submit Application'}
+                      {completionPercentage >= 85 && !isSubmitting && (
                         <svg className="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       )}
                     </button>
-                    {completionPercentage < 100 && (
+                    {completionPercentage < 85 && (
                       <p className="text-xs text-gray-500 text-right">
-                        {Math.ceil((19 - Math.round((completionPercentage / 100) * 19)))} more fields needed for publishing
+                        {Math.ceil((19 - Math.round((completionPercentage / 100) * 19)))} more fields needed to submit
+                      </p>
+                    )}
+                    {completionPercentage >= 85 && completionPercentage < 100 && (
+                      <p className="text-xs text-blue-600 text-right font-medium">
+                        ✓ Ready to submit application
                       </p>
                     )}
                     {completionPercentage >= 100 && (
