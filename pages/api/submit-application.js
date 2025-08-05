@@ -1,12 +1,11 @@
 import fs from 'fs'
 import path from 'path'
+import formidable from 'formidable'
 
 export const config = {
   api: {
-    bodyParser: {
-      sizeLimit: '10mb'
-    }
-  }
+    bodyParser: false,
+  },
 }
 
 export default async function handler(req, res) {
@@ -15,7 +14,41 @@ export default async function handler(req, res) {
   }
 
   try {
-    const formData = req.body
+    // Parse FormData
+    const form = formidable({})
+    const [fields, files] = await form.parse(req)
+    
+    // Convert fields to proper format
+    const formData = {}
+    Object.keys(fields).forEach(key => {
+      const value = Array.isArray(fields[key]) ? fields[key][0] : fields[key]
+      
+      // Try to parse JSON fields
+      if (key === 'experience' || key === 'certifications' || key === 'education' || key === 'references' || key === 'languages' || key === 'visa') {
+        try {
+          formData[key] = JSON.parse(value)
+        } catch (e) {
+          formData[key] = value
+        }
+      } else {
+        formData[key] = value
+      }
+    })
+
+    // Handle profile picture if uploaded
+    if (files.profilePicture) {
+      const file = Array.isArray(files.profilePicture) ? files.profilePicture[0] : files.profilePicture
+      
+      // Read file and convert to base64
+      const fileBuffer = fs.readFileSync(file.filepath)
+      const base64String = fileBuffer.toString('base64')
+      const mimeType = file.mimetype || 'image/jpeg'
+      
+      formData.profilePicture = `data:${mimeType};base64,${base64String}`
+      
+      // Clean up temporary file
+      fs.unlinkSync(file.filepath)
+    }
 
     // Generate a unique ID for this submission (6 characters)
     const uniqueId = Math.random().toString(36).substring(2, 8).toUpperCase()

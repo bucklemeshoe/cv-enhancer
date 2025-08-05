@@ -1,12 +1,11 @@
 import fs from 'fs'
 import path from 'path'
+import formidable from 'formidable'
 
 export const config = {
   api: {
-    bodyParser: {
-      sizeLimit: '10mb'
-    }
-  }
+    bodyParser: false,
+  },
 }
 
 export default async function handler(req, res) {
@@ -15,10 +14,48 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { submissionId, studentData } = req.body
+    // Parse FormData
+    const form = formidable({})
+    const [fields, files] = await form.parse(req)
+    
+    const submissionId = Array.isArray(fields.submissionId) ? fields.submissionId[0] : fields.submissionId
+    
+    if (!submissionId) {
+      return res.status(400).json({ message: 'Missing submissionId' })
+    }
 
-    if (!submissionId || !studentData) {
-      return res.status(400).json({ message: 'Missing submissionId or studentData' })
+    // Convert studentData to proper format
+    const studentData = {}
+    Object.keys(fields).forEach(key => {
+      if (key !== 'submissionId') {
+        const value = Array.isArray(fields[key]) ? fields[key][0] : fields[key]
+        
+        // Try to parse JSON fields
+        if (key === 'experience' || key === 'certifications' || key === 'education' || key === 'references' || key === 'languages' || key === 'visa') {
+          try {
+            studentData[key] = JSON.parse(value)
+          } catch (e) {
+            studentData[key] = value
+          }
+        } else {
+          studentData[key] = value
+        }
+      }
+    })
+
+    // Handle profile picture if uploaded
+    if (files.profilePicture) {
+      const file = Array.isArray(files.profilePicture) ? files.profilePicture[0] : files.profilePicture
+      
+      // Read file and convert to base64
+      const fileBuffer = fs.readFileSync(file.filepath)
+      const base64String = fileBuffer.toString('base64')
+      const mimeType = file.mimetype || 'image/jpeg'
+      
+      studentData.profilePicture = `data:${mimeType};base64,${base64String}`
+      
+      // Clean up temporary file
+      fs.unlinkSync(file.filepath)
     }
 
     // Validate required fields
@@ -34,12 +71,12 @@ export default async function handler(req, res) {
     }
 
     // Read all JSON files and find the one with matching ID
-    const files = fs.readdirSync(submissionsDir).filter(file => file.endsWith('.json'))
+    const files_list = fs.readdirSync(submissionsDir).filter(file => file.endsWith('.json'))
     
     let submission = null
     let submissionFile = null
     
-    for (const file of files) {
+    for (const file of files_list) {
       try {
         const filePath = path.join(submissionsDir, file)
         const fileContent = fs.readFileSync(filePath, 'utf8')
