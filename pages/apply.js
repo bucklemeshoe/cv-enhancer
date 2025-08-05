@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
+import imageCompression from 'browser-image-compression'
 
 export default function Apply() {
   const router = useRouter()
@@ -55,6 +56,7 @@ export default function Apply() {
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
+  const [imageCompressing, setImageCompressing] = useState(false)
 
   // Calculate completion percentage
   const calculateCompletionPercentage = () => {
@@ -186,7 +188,7 @@ export default function Apply() {
     }))
   }
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (file) {
       // Validate file type
@@ -196,16 +198,37 @@ export default function Apply() {
         return
       }
       
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Please select an image smaller than 5MB')
-        return
+      try {
+        setImageCompressing(true)
+        
+        // Compression options
+        const options = {
+          maxSizeMB: 0.5,          // Compress to max 500KB
+          maxWidthOrHeight: 800,   // Resize to max 800px on longest side
+          useWebWorker: true,      // Use web worker for non-blocking compression
+          quality: 0.8,            // Good quality while reducing size
+          fileType: 'image/jpeg'   // Convert to JPEG for better compression
+        }
+        
+        console.log('Original file size:', (file.size / 1024 / 1024).toFixed(2), 'MB')
+        
+        // Compress the image
+        const compressedFile = await imageCompression(file, options)
+        
+        console.log('Compressed file size:', (compressedFile.size / 1024 / 1024).toFixed(2), 'MB')
+        console.log('Compression ratio:', ((1 - compressedFile.size / file.size) * 100).toFixed(1) + '%')
+        
+        setFormData(prev => ({
+          ...prev,
+          profilePicture: compressedFile
+        }))
+        
+      } catch (error) {
+        console.error('Image compression failed:', error)
+        alert('Failed to compress image. Please try a different image.')
+      } finally {
+        setImageCompressing(false)
       }
-      
-      setFormData(prev => ({
-        ...prev,
-        profilePicture: file
-      }))
     }
   }
 
@@ -724,7 +747,14 @@ export default function Apply() {
                               accept="image/*"
                               onChange={handleFileChange}
                               className="sr-only"
+                              disabled={imageCompressing}
                             />
+                            {imageCompressing && (
+                              <div className="flex items-center space-x-2 text-sm text-blue-600">
+                                <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                                <span>Compressing image...</span>
+                              </div>
+                            )}
                             {formData.profilePicture && (
                               <button
                                 type="button"
