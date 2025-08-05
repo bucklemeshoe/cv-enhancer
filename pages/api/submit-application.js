@@ -2,12 +2,19 @@ import formidable from 'formidable'
 import { createClient } from '@supabase/supabase-js'
 
 // Initialize Supabase client
+console.log('Environment variables check:', {
+  NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  url_length: process.env.NEXT_PUBLIC_SUPABASE_URL?.length,
+  key_length: process.env.SUPABASE_SERVICE_ROLE_KEY?.length
+})
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-console.log('Supabase client initialized for all environments')
+console.log('Supabase client initialized:', !!supabase)
 
 export const config = {
   api: {
