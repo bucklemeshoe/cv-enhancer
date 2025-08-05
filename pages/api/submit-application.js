@@ -32,11 +32,13 @@ export default async function handler(req, res) {
     // Parse FormData
     const form = formidable({})
     console.log('Parsing FormData...')
+    console.log('Request Content-Type:', req.headers['content-type'])
     
     const [fields, files] = await form.parse(req)
     console.log('FormData parsed successfully')
     console.log('Fields received:', Object.keys(fields))
     console.log('Files received:', Object.keys(files))
+    console.log('Raw fields:', fields)
     
     // Convert fields to proper format
     const formData = {}
@@ -115,8 +117,8 @@ export default async function handler(req, res) {
       .select()
     
     if (error) {
-      console.error('Supabase insert error:', error)
-      throw new Error(`Failed to store submission in database: ${error.message}`)
+      console.error('Supabase insert error:', JSON.stringify(error, null, 2))
+      throw new Error(`Failed to store submission in database: ${error.message || JSON.stringify(error)}`)
     }
     
     console.log(`New submission created in Supabase: ${uniqueId}`)
