@@ -575,7 +575,7 @@ export default function Admin() {
                           <div className="flex items-center gap-x-4 min-w-0">
                             {/* Profile Picture */}
                             <div className="flex-shrink-0">
-                              {submission.studentData.profilePicture ? (
+                              {submission.studentData.profilePicture && typeof submission.studentData.profilePicture === 'string' && submission.studentData.profilePicture.startsWith('data:') ? (
                                 <img
                                   src={submission.studentData.profilePicture}
                                   alt={`${submission.studentData.firstName} ${submission.studentData.lastName}`}
@@ -586,7 +586,7 @@ export default function Admin() {
                                   }}
                                 />
                               ) : null}
-                              <div className={`h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center ring-2 ring-gray-200 ${submission.studentData.profilePicture ? 'hidden' : 'flex'}`}>
+                              <div className={`h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center ring-2 ring-gray-200 ${submission.studentData.profilePicture && typeof submission.studentData.profilePicture === 'string' && submission.studentData.profilePicture.startsWith('data:') ? 'hidden' : 'flex'}`}>
                                 <svg className="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                                   <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clipRule="evenodd" />
                                 </svg>
