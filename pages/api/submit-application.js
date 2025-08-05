@@ -17,7 +17,12 @@ export default async function handler(req, res) {
     console.log('Submit application request received')
     // Parse FormData
     const form = formidable({})
+    console.log('Parsing FormData...')
+    
     const [fields, files] = await form.parse(req)
+    console.log('FormData parsed successfully')
+    console.log('Fields received:', Object.keys(fields))
+    console.log('Files received:', Object.keys(files))
     
     // Convert fields to proper format
     const formData = {}
@@ -81,9 +86,17 @@ export default async function handler(req, res) {
       }
     }
 
-    // Ensure the submissions directory exists
-    const submissionsDir = path.join(process.cwd(), 'data', 'submissions')
+    // Ensure the data and submissions directories exist
+    const dataDir = path.join(process.cwd(), 'data')
+    const submissionsDir = path.join(dataDir, 'submissions')
+    console.log('Data directory path:', dataDir)
     console.log('Submissions directory path:', submissionsDir)
+    
+    // Create directories if they don't exist
+    if (!fs.existsSync(dataDir)) {
+      console.log('Creating data directory')
+      fs.mkdirSync(dataDir, { recursive: true })
+    }
     
     if (!fs.existsSync(submissionsDir)) {
       console.log('Creating submissions directory')
@@ -93,9 +106,14 @@ export default async function handler(req, res) {
     // Write the submission to a JSON file
     const filePath = path.join(submissionsDir, filename)
     console.log('Writing submission to file:', filePath)
-    fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
-
-    console.log(`New submission created: ${uniqueId} - ${filename}`)
+    
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(submission, null, 2))
+      console.log(`New submission created: ${uniqueId} - ${filename}`)
+    } catch (writeError) {
+      console.error('Error writing submission file:', writeError)
+      throw new Error(`Failed to write submission file: ${writeError.message}`)
+    }
 
     // Return success response with the unique ID
     res.status(200).json({ 
