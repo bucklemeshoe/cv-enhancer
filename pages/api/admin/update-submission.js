@@ -16,6 +16,8 @@ export const config = {
 }
 
 export default async function handler(req, res) {
+  console.log('🚀 UPDATE-SUBMISSION API v2.0 - Supporting partial updates with auto-republish')
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' })
   }

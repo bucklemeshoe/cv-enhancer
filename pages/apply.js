@@ -46,7 +46,7 @@ export default function Apply() {
     hobbiesAndInterests: '',
     
     // References
-    references: [{ name: '', roleOrRelation: '', contact: '' }],
+    references: [{ name: '', roleOrRelation: '', contact: '', website: '' }],
     
     // Additional Info
     availability: '',
@@ -314,7 +314,7 @@ export default function Apply() {
           highestQualification: '',
           profile: '',
           hobbiesAndInterests: '',
-          references: [{ name: '', roleOrRelation: '', contact: '' }],
+          references: [{ name: '', roleOrRelation: '', contact: '', website: '' }],
           availability: '',
           salaryExpectation: '',
           additionalNotes: ''
@@ -1237,6 +1237,16 @@ export default function Apply() {
                                     className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                                   />
                                 </div>
+                                <div>
+                                  <label className="block text-xs font-medium text-gray-600 mb-1">Website (Optional)</label>
+                                  <input
+                                    type="url"
+                                    value={ref.website}
+                                    onChange={(e) => handleObjectArrayChange('references', index, 'website', e.target.value)}
+                                    placeholder="e.g., https://linkedin.com/in/username"
+                                    className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                                  />
+                                </div>
 
                               </div>
                               {formData.references.length > 1 && (
@@ -1252,7 +1262,7 @@ export default function Apply() {
                           ))}
                           <button
                             type="button"
-                            onClick={() => addObjectArrayItem('references', { name: '', roleOrRelation: '', contact: '' })}
+                            onClick={() => addObjectArrayItem('references', { name: '', roleOrRelation: '', contact: '', website: '' })}
                             className="rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors"
                             style={{ backgroundColor: '#14b8a6' }}
                             onMouseEnter={(e) => e.target.style.backgroundColor = '#0d9488'}
