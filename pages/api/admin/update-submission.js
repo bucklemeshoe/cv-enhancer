@@ -102,12 +102,60 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: 'Submission not found' })
     }
 
-    // Update the submission data in Supabase
+    // FUTURE-PROOF DATA PROTECTION: Merge new data with existing data
+    const existingData = submission.student_data || {}
+    
+    // Create backup snapshot before update (for data recovery)
+    const backupSnapshot = {
+      timestamp: new Date().toISOString(),
+      submissionId,
+      previousData: existingData,
+      updateSource: req.headers['content-type']?.includes('application/json') ? 'admin-edit-json' : 'admin-edit-formdata'
+    }
+    console.log('Creating backup snapshot:', JSON.stringify(backupSnapshot, null, 2))
+    
+    // SMART MERGE: Preserve existing fields, only update provided fields
+    const mergedData = { ...existingData }
+    
+    // Only update fields that are actually provided (not null/undefined/empty)
+    Object.keys(studentData).forEach(key => {
+      const newValue = studentData[key]
+      
+      // Skip null, undefined, or empty string values (preserve existing)
+      if (newValue !== null && newValue !== undefined && newValue !== '') {
+        mergedData[key] = newValue
+      } else if (key === 'profilePicture' && newValue === null) {
+        // Special case: allow explicit removal of profile picture
+        mergedData[key] = null
+      }
+      // For all other cases, keep existing value
+    })
+    
+    // DATA VALIDATION: Ensure critical fields are never lost
+    const criticalFields = ['firstName', 'lastName', 'email']
+    const missingCritical = criticalFields.filter(field => !mergedData[field] || mergedData[field].trim() === '')
+    
+    if (missingCritical.length > 0) {
+      return res.status(400).json({ 
+        message: `Data protection error: Critical fields cannot be empty: ${missingCritical.join(', ')}`,
+        backup: backupSnapshot
+      })
+    }
+    
+    console.log('Data merge complete. Fields updated:', Object.keys(studentData))
+    console.log('Merged data preview:', {
+      firstName: mergedData.firstName,
+      lastName: mergedData.lastName,
+      email: mergedData.email,
+      fieldCount: Object.keys(mergedData).length
+    })
+    
+    // Update the submission data in Supabase with MERGED data
     const updatedAt = new Date().toISOString()
     const { data: updatedSubmission, error: updateError } = await supabase
       .from('submissions')
       .update({
-        student_data: studentData,
+        student_data: mergedData, // Use merged data instead of raw studentData
         updated_at: updatedAt
       })
       .eq('id', submissionId)
@@ -123,8 +171,8 @@ export default async function handler(req, res) {
     if (submission.status === 'published') {
       console.log('Updating published CV for:', submission.unique_id)
       
-      // Use the latest student data (could be enhanced_data or student_data)
-      const cvData = submission.enhanced_data || studentData
+      // Use the latest merged data (preserves enhanced_data if available, otherwise uses merged data)
+      const cvData = submission.enhanced_data || mergedData
       
       // Generate the same slug format as publish-cv.js
       const firstName = cvData.firstName.toLowerCase().replace(/\s+/g, '-')
