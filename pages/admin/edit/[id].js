@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { debounce } from 'lodash'
 import imageCompression from 'browser-image-compression'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
@@ -88,65 +87,7 @@ export default function EditCV() {
   const [originalFormData, setOriginalFormData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isPublished, setIsPublished] = useState(false)
-  const [autoSaveStatus, setAutoSaveStatus] = useState('saved') // 'saving', 'saved', 'error'
-  const [lastSavedAt, setLastSavedAt] = useState(null)
   const [imageCompressing, setImageCompressing] = useState(false)
-  
-  // Auto-save functionality
-  const autoSaveTimeoutRef = useRef(null)
-  
-  const performAutoSave = useCallback(async (dataToSave) => {
-    try {
-      setAutoSaveStatus('saving')
-      
-      // Create a copy of data excluding profile picture for auto-save
-      // Profile pictures should only be saved during manual save to prevent corruption
-      const { profilePicture, ...autoSaveData } = dataToSave
-      
-      const response = await fetch('/api/admin/update-submission', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          submissionId: id,
-          studentData: autoSaveData // Save everything except profile picture
-        })
-      })
-      
-      if (response.ok) {
-        setAutoSaveStatus('saved')
-        setLastSavedAt(new Date())
-        // Only mark as having no unsaved changes if there's no profile picture changes
-        const hasProfilePictureChanges = profilePicture instanceof File || 
-          (typeof profilePicture === 'string' && originalFormData && profilePicture !== originalFormData.profilePicture)
-        if (!hasProfilePictureChanges) {
-          setHasUnsavedChanges(false)
-        }
-        setOriginalFormData({ ...dataToSave })
-      } else {
-        throw new Error('Auto-save failed')
-      }
-    } catch (error) {
-      console.error('Auto-save error:', error)
-      setAutoSaveStatus('error')
-      // Keep hasUnsavedChanges as true so user knows to manually save
-    }
-  }, [id, originalFormData])
-  
-  const debouncedAutoSave = useCallback(
-    debounce((formData) => {
-      performAutoSave(formData)
-    }, 2000),
-    [performAutoSave]
-  )
-  
-  // Cleanup debounced function on unmount
-  useEffect(() => {
-    return () => {
-      debouncedAutoSave.cancel()
-    }
-  }, [debouncedAutoSave])
 
   // Simple password protection (in production, use proper authentication)
   const ADMIN_PASSWORD = 'cvadmin2024' // Change this to a secure password
@@ -516,13 +457,11 @@ export default function EditCV() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    const newFormData = {
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: value
-    }
-    setFormData(newFormData)
+    }))
     setHasUnsavedChanges(true)
-    debouncedAutoSave(newFormData)
   }
 
   const handleFileChange = async (e) => {
@@ -555,14 +494,11 @@ export default function EditCV() {
         console.log('Compressed file size:', (compressedFile.size / 1024 / 1024).toFixed(2), 'MB')
         console.log('Compression ratio:', ((1 - compressedFile.size / file.size) * 100).toFixed(1) + '%')
         
-        const newFormData = {
-          ...formData,
+        setFormData(prev => ({
+          ...prev,
           profilePicture: compressedFile
-        }
-        
-        setFormData(newFormData)
+        }))
         setHasUnsavedChanges(true)
-        debouncedAutoSave(newFormData)
         
       } catch (error) {
         console.error('Image compression failed:', error)
@@ -574,64 +510,50 @@ export default function EditCV() {
   }
 
   const handleArrayChange = (field, index, value) => {
-    const newFormData = {
-      ...formData,
-      [field]: formData[field].map((item, i) => i === index ? value : item)
-    }
-    setFormData(newFormData)
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].map((item, i) => i === index ? value : item)
+    }))
     setHasUnsavedChanges(true)
-    debouncedAutoSave(newFormData)
   }
 
   const handleObjectArrayChange = (field, index, key, value) => {
-    const newFormData = {
-      ...formData,
-      [field]: formData[field].map((item, i) => 
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].map((item, i) => 
         i === index ? { ...item, [key]: value } : item
       )
-    }
-    setFormData(newFormData)
+    }))
     setHasUnsavedChanges(true)
-    debouncedAutoSave(newFormData)
   }
 
   const addArrayItem = (field, defaultValue = '') => {
-    const newFormData = {
-      ...formData,
-      [field]: [...formData[field], defaultValue]
-    }
-    setFormData(newFormData)
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...prev[field], defaultValue]
+    }))
     setHasUnsavedChanges(true)
-    debouncedAutoSave(newFormData)
   }
 
   const addObjectArrayItem = (field, defaultObject) => {
-    const newFormData = {
-      ...formData,
-      [field]: [...formData[field], defaultObject]
-    }
-    setFormData(newFormData)
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...prev[field], defaultObject]
+    }))
     setHasUnsavedChanges(true)
-    debouncedAutoSave(newFormData)
   }
 
   const removeArrayItem = (field, index) => {
-    const newFormData = {
-      ...formData,
-      [field]: formData[field].filter((_, i) => i !== index)
-    }
-    setFormData(newFormData)
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index)
+    }))
     setHasUnsavedChanges(true)
-    debouncedAutoSave(newFormData)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
-    // Cancel any pending auto-save to avoid conflicts
-    debouncedAutoSave.cancel()
-    setAutoSaveStatus('saved') // Reset auto-save status during manual save
     
     try {
       // Check if there's a file upload
@@ -990,51 +912,14 @@ export default function EditCV() {
                 </p>
               </div>
               <div className="mt-4 flex shrink-0 items-center space-x-3 md:mt-0 md:ml-4">
-                {/* Auto-save status indicator */}
-                <div className="flex items-center space-x-2 text-sm">
-                  {autoSaveStatus === 'saving' && (
-                    <>
-                      <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-                      <span className="text-blue-600 font-medium">Saving...</span>
-                    </>
-                  )}
-                  {autoSaveStatus === 'saved' && !hasUnsavedChanges && (
-                    <>
-                      <div className="h-4 w-4 bg-green-500 rounded-full flex items-center justify-center">
-                        <svg className="h-2.5 w-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-green-600 font-medium">
-                        Auto-saved {lastSavedAt && `at ${lastSavedAt.toLocaleTimeString()}`}
-                      </span>
-                    </>
-                  )}
-                  {autoSaveStatus === 'error' && (
-                    <>
-                      <div className="h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
-                        <svg className="h-2.5 w-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-red-600 font-medium">Auto-save failed</span>
-                    </>
-                  )}
-                  {hasUnsavedChanges && autoSaveStatus === 'saved' && (
-                    <>
-                      <div className="h-4 w-4 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <div className="h-2 w-2 bg-white rounded-full"></div>
-                      </div>
-                      <span className="text-yellow-600 font-medium">
-                        {(formData.profilePicture instanceof File || 
-                          (typeof formData.profilePicture === 'string' && originalFormData && 
-                           formData.profilePicture !== originalFormData.profilePicture)) 
-                          ? 'Profile picture needs manual save' 
-                          : 'Unsaved changes'}
-                      </span>
-                    </>
-                  )}
-                </div>
+                {hasUnsavedChanges && (
+                  <div className="flex items-center space-x-2 text-sm">
+                    <div className="h-4 w-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                      <div className="h-2 w-2 bg-white rounded-full"></div>
+                    </div>
+                    <span className="text-yellow-600 font-medium">Unsaved changes</span>
+                  </div>
+                )}
                 
                 <button
                   onClick={handleBackToAdmin}
