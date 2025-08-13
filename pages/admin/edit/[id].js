@@ -99,6 +99,10 @@ export default function EditCV() {
     try {
       setAutoSaveStatus('saving')
       
+      // Create a copy of data excluding profile picture for auto-save
+      // Profile pictures should only be saved during manual save to prevent corruption
+      const { profilePicture, ...autoSaveData } = dataToSave
+      
       const response = await fetch('/api/admin/update-submission', {
         method: 'POST',
         headers: {
@@ -106,14 +110,19 @@ export default function EditCV() {
         },
         body: JSON.stringify({
           submissionId: id,
-          studentData: dataToSave
+          studentData: autoSaveData // Save everything except profile picture
         })
       })
       
       if (response.ok) {
         setAutoSaveStatus('saved')
         setLastSavedAt(new Date())
-        setHasUnsavedChanges(false)
+        // Only mark as having no unsaved changes if there's no profile picture changes
+        const hasProfilePictureChanges = profilePicture instanceof File || 
+          (typeof profilePicture === 'string' && originalFormData && profilePicture !== originalFormData.profilePicture)
+        if (!hasProfilePictureChanges) {
+          setHasUnsavedChanges(false)
+        }
         setOriginalFormData({ ...dataToSave })
       } else {
         throw new Error('Auto-save failed')
@@ -123,7 +132,7 @@ export default function EditCV() {
       setAutoSaveStatus('error')
       // Keep hasUnsavedChanges as true so user knows to manually save
     }
-  }, [id])
+  }, [id, originalFormData])
   
   const debouncedAutoSave = useCallback(
     debounce((formData) => {
@@ -1016,7 +1025,13 @@ export default function EditCV() {
                       <div className="h-4 w-4 bg-yellow-500 rounded-full flex items-center justify-center">
                         <div className="h-2 w-2 bg-white rounded-full"></div>
                       </div>
-                      <span className="text-yellow-600 font-medium">Unsaved changes</span>
+                      <span className="text-yellow-600 font-medium">
+                        {(formData.profilePicture instanceof File || 
+                          (typeof formData.profilePicture === 'string' && originalFormData && 
+                           formData.profilePicture !== originalFormData.profilePicture)) 
+                          ? 'Profile picture needs manual save' 
+                          : 'Unsaved changes'}
+                      </span>
                     </>
                   )}
                 </div>
