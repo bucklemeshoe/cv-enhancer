@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import imageCompression from 'browser-image-compression'
+import { validateFormStructure, logValidationResults } from '../../../lib/form-validation'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -393,7 +394,7 @@ export default function EditCV() {
         // Check if CV is published
         setIsPublished(submission.status === 'published')
         
-        setFormData({
+        const loadedFormData = {
           // Personal Information
           firstName: data.firstName || '',
           lastName: data.lastName || '',
@@ -442,7 +443,15 @@ export default function EditCV() {
           availability: data.availability || '',
           salaryExpectation: data.salaryExpectation || '',
           additionalNotes: data.additionalNotes || ''
-        })
+        }
+        
+        // Validate form structure in development
+        if (process.env.NODE_ENV === 'development') {
+          const validation = validateFormStructure(loadedFormData, `Admin Edit Form (ID: ${id})`)
+          logValidationResults(validation)
+        }
+        
+        setFormData(loadedFormData)
         setOriginalFormData(JSON.stringify(data)) // Store original data for comparison
         setLoading(false)
       } else {
@@ -1240,8 +1249,8 @@ export default function EditCV() {
                       <div className="mt-2 sm:col-span-2 sm:mt-0">
                         <div className="flex items-center gap-x-6">
                           {formData.profilePicture && 
-                           (typeof formData.profilePicture === 'string' && formData.profilePicture.trim() !== '') || 
-                           (typeof formData.profilePicture === 'object' && formData.profilePicture instanceof File) ? (
+                           ((typeof formData.profilePicture === 'string' && formData.profilePicture.trim() !== '') || 
+                            (typeof formData.profilePicture === 'object' && formData.profilePicture instanceof File)) ? (
                             <img
                               src={typeof formData.profilePicture === 'string' ? formData.profilePicture : URL.createObjectURL(formData.profilePicture)}
                               alt="Profile preview"
