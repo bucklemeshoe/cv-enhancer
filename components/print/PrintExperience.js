@@ -15,7 +15,7 @@ export default function PrintExperience({ experience }) {
   return (
     <div className="print-section">
       <h3 className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
-        Maritime Experience
+        Work Experience
       </h3>
       
       <div className="space-y-4">

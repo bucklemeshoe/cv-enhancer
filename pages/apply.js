@@ -1144,12 +1144,12 @@ export default function Apply() {
                           rows={4}
                           value={formData.profile}
                           onChange={handleInputChange}
-                          maxLength="500"
+                          maxLength="800"
                           placeholder="Write a brief professional summary about yourself, your experience, and career goals..."
                           className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-2xl sm:text-sm sm:leading-6"
                         />
                         <p className="mt-3 text-sm leading-6 text-gray-600">
-                          {formData.profile.length}/500 characters
+                          {formData.profile.length}/800 characters
                         </p>
                       </div>
                     </div>
