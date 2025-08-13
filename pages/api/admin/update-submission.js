@@ -87,6 +87,7 @@ export default async function handler(req, res) {
 
     // NOTE: We don't validate required fields here because we support partial updates.
     // Validation happens after merging with existing data to ensure critical fields aren't lost.
+    console.log('DEBUG: Skipping premature validation for partial updates')
 
     // Get the submission from Supabase
     const { data: submission, error: fetchError } = await supabase
