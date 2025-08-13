@@ -85,10 +85,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing submissionId' })
     }
 
-    // Validate required fields
-    if (!studentData.firstName || !studentData.lastName || !studentData.email) {
-      return res.status(400).json({ message: 'Missing required fields: firstName, lastName, and email are required' })
-    }
+    // NOTE: We don't validate required fields here because we support partial updates.
+    // Validation happens after merging with existing data to ensure critical fields aren't lost.
 
     // Get the submission from Supabase
     const { data: submission, error: fetchError } = await supabase
@@ -133,7 +131,10 @@ export default async function handler(req, res) {
     
     // DATA VALIDATION: Ensure critical fields are never lost (check AFTER merge)
     const criticalFields = ['firstName', 'lastName', 'email']
-    const missingCritical = criticalFields.filter(field => !mergedData[field] || mergedData[field].trim() === '')
+    const missingCritical = criticalFields.filter(field => {
+      const value = mergedData[field]
+      return !value || (typeof value === 'string' && value.trim() === '')
+    })
     
     if (missingCritical.length > 0) {
       return res.status(400).json({ 
