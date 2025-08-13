@@ -31,12 +31,7 @@ export default function Home() {
         {/* Background Overlay for Better Text Readability */}
         <div className="absolute inset-0 bg-white bg-opacity-75"></div>
         
-        {/* Notification Banner */}
-        <div className="text-white text-center py-3 px-4 relative z-20" style={{ backgroundColor: '#ff6b6b' }}>
-          <p className="text-sm font-medium">
-            10% off all in-house Pull North courses for bookings made during June and July 2025 😊
-          </p>
-        </div>
+        {/* Notification Banner removed (promotion ended) */}
         
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 relative z-10">
@@ -172,9 +167,9 @@ export default function Home() {
              </div>
 
              {/* Bottom Center - Copyright */}
-             <div className="pt-8 border-t border-teal-200 text-center">
-               <p className="text-gray-600 text-sm">© 2024 Pull North | Made with ❤️ by bucklemeshoe</p>
-             </div>
+            <div className="pt-8 border-t border-teal-200 text-center">
+              <p className="text-gray-600 text-sm">© 2024 Pull North | Made with ❤️ by <a href="https://bucklemeshoe.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-teal-700">bucklemeshoe</a></p>
+            </div>
 
            </div>
          </footer>
