@@ -131,7 +131,7 @@ export default async function handler(req, res) {
       // For all other cases, keep existing value
     })
     
-    // DATA VALIDATION: Ensure critical fields are never lost
+    // DATA VALIDATION: Ensure critical fields are never lost (check AFTER merge)
     const criticalFields = ['firstName', 'lastName', 'email']
     const missingCritical = criticalFields.filter(field => !mergedData[field] || mergedData[field].trim() === '')
     
@@ -148,6 +148,13 @@ export default async function handler(req, res) {
       lastName: mergedData.lastName,
       email: mergedData.email,
       fieldCount: Object.keys(mergedData).length
+    })
+    
+    // DEBUG: Log critical fields status
+    console.log('Critical fields check:', {
+      firstName: { exists: !!mergedData.firstName, value: mergedData.firstName },
+      lastName: { exists: !!mergedData.lastName, value: mergedData.lastName },
+      email: { exists: !!mergedData.email, value: mergedData.email }
     })
     
     // Update the submission data in Supabase with MERGED data
