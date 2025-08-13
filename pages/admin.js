@@ -130,7 +130,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      loadSubmissions()
+      loadSubmissions({ limit: 25, offset: 0 })
     }
   }, [isAuthenticated])
 
@@ -145,13 +145,14 @@ export default function Admin() {
     }
   }
 
-  const loadSubmissions = async () => {
+  const loadSubmissions = async (opts = {}) => {
+    const { append = false, limit = 25, offset = 0 } = opts
     setLoading(true)
     try {
-      const response = await fetch('/api/admin/submissions')
+      const response = await fetch(`/api/admin/submissions?limit=${limit}&offset=${offset}`)
       if (response.ok) {
         const data = await response.json()
-        setSubmissions(data.submissions)
+        setSubmissions(prev => append ? [...prev, ...data.submissions] : data.submissions)
       } else {
         setMessage('Error loading submissions')
       }
@@ -735,6 +736,20 @@ export default function Admin() {
                         </li>
                       ))}
                     </ul>
+                    {/* Load more for pagination */}
+                    {submissions.length >= 25 && activeTab === 'All' && (
+                      <div className="mt-4 text-center">
+                        <button
+                          onClick={() => loadSubmissions({ append: true, limit: 25, offset: submissions.length })}
+                          className="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors"
+                          style={{ backgroundColor: '#14b8a6' }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#0d9488'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#14b8a6'}
+                        >
+                          Load more
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 )

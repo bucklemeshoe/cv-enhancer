@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: 'Missing submission ID' })
     }
 
-    console.log('Getting submission from Supabase with ID:', id)
+    
 
     const { data, error } = await supabase
       .from('submissions')

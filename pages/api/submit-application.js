@@ -3,19 +3,10 @@ import fs from 'fs'
 import { createClient } from '@supabase/supabase-js'
 
 // Initialize Supabase client
-console.log('Environment variables check:', {
-  NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-  url_length: process.env.NEXT_PUBLIC_SUPABASE_URL?.length,
-  key_length: process.env.SUPABASE_SERVICE_ROLE_KEY?.length
-})
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
-
-console.log('Supabase client initialized with service role:', !!supabase)
 
 export const config = {
   api: {
@@ -29,17 +20,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('Submit application request received')
     // Parse FormData
     const form = formidable({})
-    console.log('Parsing FormData...')
-    console.log('Request Content-Type:', req.headers['content-type'])
     
     const [fields, files] = await form.parse(req)
-    console.log('FormData parsed successfully')
-    console.log('Fields received:', Object.keys(fields))
-    console.log('Files received:', Object.keys(files))
-    console.log('Raw fields:', fields)
     
     // Convert fields to proper format
     const formData = {}
@@ -80,8 +64,6 @@ export default async function handler(req, res) {
     const submittedAt = new Date().toISOString()
 
     // Store in Supabase
-    console.log('Storing submission in Supabase...')
-    
     const { data, error } = await supabase
       .from('submissions')
       .insert([{
@@ -97,8 +79,6 @@ export default async function handler(req, res) {
       console.error('Supabase insert error:', JSON.stringify(error, null, 2))
       throw new Error(`Failed to store submission in database: ${error.message || JSON.stringify(error)}`)
     }
-    
-    console.log(`New submission created in Supabase: ${uniqueId}`)
 
     // Return success response with the actual database ID
     res.status(200).json({ 

@@ -16,7 +16,6 @@ export const config = {
 }
 
 export default async function handler(req, res) {
-  console.log('🚀 UPDATE-SUBMISSION API v2.0 - Supporting partial updates with auto-republish')
   
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' })
@@ -89,7 +88,7 @@ export default async function handler(req, res) {
 
     // NOTE: We don't validate required fields here because we support partial updates.
     // Validation happens after merging with existing data to ensure critical fields aren't lost.
-    console.log('DEBUG: Skipping premature validation for partial updates')
+    
 
     // Get the submission from Supabase
     const { data: submission, error: fetchError } = await supabase
@@ -146,20 +145,6 @@ export default async function handler(req, res) {
       })
     }
     
-    console.log('Data merge complete. Fields updated:', Object.keys(studentData))
-    console.log('Merged data preview:', {
-      firstName: mergedData.firstName,
-      lastName: mergedData.lastName,
-      email: mergedData.email,
-      fieldCount: Object.keys(mergedData).length
-    })
-    
-    // DEBUG: Log critical fields status
-    console.log('Critical fields check:', {
-      firstName: { exists: !!mergedData.firstName, value: mergedData.firstName },
-      lastName: { exists: !!mergedData.lastName, value: mergedData.lastName },
-      email: { exists: !!mergedData.email, value: mergedData.email }
-    })
     
     // Update the submission data in Supabase with MERGED data
     const updatedAt = new Date().toISOString()
@@ -180,7 +165,6 @@ export default async function handler(req, res) {
 
     // If this submission is published, also update the published CV
     if (submission.status === 'published') {
-      console.log('Updating published CV for:', submission.unique_id)
       
       // Use the latest merged data (preserves enhanced_data if available, otherwise uses merged data)
       const cvData = submission.enhanced_data || mergedData
@@ -241,8 +225,6 @@ export default async function handler(req, res) {
       if (publishedUpdateError) {
         console.error('Error updating published CV:', publishedUpdateError)
         // Don't fail the entire request if published CV update fails
-      } else {
-        console.log('✅ Published CV updated successfully')
       }
     }
 

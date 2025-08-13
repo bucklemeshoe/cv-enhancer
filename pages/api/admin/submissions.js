@@ -12,12 +12,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('Loading submissions from Supabase...')
-    
+    // Pagination params
+    const limit = Number.isFinite(parseInt(req.query.limit)) ? Math.max(1, parseInt(req.query.limit)) : 25
+    const offset = Number.isFinite(parseInt(req.query.offset)) ? Math.max(0, parseInt(req.query.offset)) : 0
+
     const { data, error } = await supabase
       .from('submissions')
       .select('*')
       .order('submitted_at', { ascending: false })
+      .range(offset, offset + limit - 1)
     
     if (error) {
       console.error('Supabase query error:', error)
@@ -39,7 +42,7 @@ export default async function handler(req, res) {
       slug: submission.published_slug || submission.unique_id
     }))
 
-    res.status(200).json({ submissions })
+    res.status(200).json({ submissions, page: { limit, offset, returned: submissions.length } })
 
   } catch (error) {
     console.error('Error loading submissions:', error)

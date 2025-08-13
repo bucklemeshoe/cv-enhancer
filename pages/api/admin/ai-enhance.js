@@ -37,6 +37,9 @@ export default async function handler(req, res) {
         - Keep the same core content and experiences mentioned, but enhance with professional context
         - Do not add fake experiences, but you can reference their target role and industry knowledge
         - Maintain professional, factual tone
+        - Write in first person ("I"), as if the candidate is speaking about themselves
+        - Do not use third person and do not refer to the candidate by name
+        - Keep the voice consistent and natural for a candidate writing their own CV
         - Do not add emojis or overly enthusiastic language
         - Aim for at least 320 characters for short profiles while keeping longer ones appropriately concise
         
@@ -78,6 +81,8 @@ export default async function handler(req, res) {
         - Keep the same responsibilities and achievements mentioned
         - Do not add new responsibilities or achievements not mentioned
         - Maintain factual, professional tone
+        - Use action-oriented statements with no pronouns (no "I", "he/she", "we")
+        - Do not use third person and do not refer to the candidate by name
         - Do not exaggerate or embellish
         - Keep each point concise and clear
         - Do not add emojis or overly enthusiastic language
@@ -98,7 +103,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are a professional CV writer specializing in yacht crew positions. Provide direct, concise enhancements without extra commentary."
+          content: "You are a professional CV writer specializing in yacht crew positions. Write in the candidate's voice. For profile summaries, use first person (\"I\"). For experience bullets, use concise action statements without pronouns. Do not use third person or refer to the candidate by name. Provide direct, concise enhancements without extra commentary."
         },
         {
           role: "user",

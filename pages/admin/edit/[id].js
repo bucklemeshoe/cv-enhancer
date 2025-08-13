@@ -503,9 +503,17 @@ export default function EditCV() {
         console.log('Compressed file size:', (compressedFile.size / 1024 / 1024).toFixed(2), 'MB')
         console.log('Compression ratio:', ((1 - compressedFile.size / file.size) * 100).toFixed(1) + '%')
         
+        // Convert the compressed file to a base64 data URL for immediate preview and reliable submission
+        const base64DataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = reject
+          reader.readAsDataURL(compressedFile)
+        })
+        
         setFormData(prev => ({
           ...prev,
-          profilePicture: compressedFile
+          profilePicture: base64DataUrl
         }))
         setHasUnsavedChanges(true)
         
@@ -565,43 +573,17 @@ export default function EditCV() {
     setIsSubmitting(true)
     
     try {
-      // Check if there's a file upload
-      const hasFileUpload = formData.profilePicture && typeof formData.profilePicture === 'object' && formData.profilePicture instanceof File
-      
-      let response
-      if (hasFileUpload) {
-        // Use FormData for file uploads
-        const submitData = new FormData()
-        submitData.append('submissionId', id)
-        
-        // Add all form fields
-        Object.keys(formData).forEach(key => {
-          if (key === 'profilePicture') {
-            if (formData.profilePicture) {
-              submitData.append('profilePicture', formData.profilePicture)
-            }
-          } else {
-            submitData.append(key, typeof formData[key] === 'object' ? JSON.stringify(formData[key]) : formData[key])
-          }
+      // Always send JSON. profilePicture is already a base64 string if present
+      const response = await fetch('/api/admin/update-submission', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          submissionId: id,
+          studentData: formData
         })
-        
-        response = await fetch('/api/admin/update-submission', {
-          method: 'POST',
-          body: submitData,
-        })
-      } else {
-        // Use JSON for text-only updates
-        response = await fetch('/api/admin/update-submission', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            submissionId: id,
-            studentData: formData
-          })
-        })
-      }
+      })
       
       if (response.ok) {
         setSubmitMessage('CV updated successfully!')
@@ -1252,7 +1234,7 @@ export default function EditCV() {
                            ((typeof formData.profilePicture === 'string' && formData.profilePicture.trim() !== '') || 
                             (typeof formData.profilePicture === 'object' && formData.profilePicture instanceof File)) ? (
                             <img
-                              src={typeof formData.profilePicture === 'string' ? formData.profilePicture : URL.createObjectURL(formData.profilePicture)}
+                              src={typeof formData.profilePicture === 'string' ? formData.profilePicture : ''}
                               alt="Profile preview"
                               className="size-24 rounded-full object-cover ring-2 ring-gray-300"
                               onError={(e) => {

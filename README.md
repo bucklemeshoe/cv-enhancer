@@ -19,15 +19,14 @@ A complete workflow system for collecting yacht crew applications, enhancing the
 - **Custom domain**: All CVs published at `cv.pullnorth.com/cvs/[name]`
 
 ### 🛡️ **Enhanced Admin Experience**
-- **Auto-save functionality** with visual status indicators (saving/saved/error)
-- **Unsaved changes protection** prevents data loss when navigating away
+- **Explicit save flow** for predictable updates
+- **Auto-republish on save** when a CV is already published
 - **Streamlined CV editing interface** with consistent navigation
 - **Real-time form validation** and user feedback
 - **Progress tracking** for AI enhancement operations
 - **Secure admin dashboard** with password protection
 
 ### ⚡ **Performance Optimizations**
-- **Debounced auto-save** reduces database calls by 60-80%
 - **Client-side image compression** reduces upload sizes by 80-90%
 - **Non-blocking image processing** using Web Workers
 - **Optimized form state management** for smooth user experience
@@ -53,6 +52,7 @@ Administrators can:
 - Review all submitted applications with status tracking
 - Edit and enhance CV content with AI assistance
 - Publish professional CVs with custom URLs
+- Saving changes to a published CV automatically updates the public CV (auto-republish)
 - Manage the complete application lifecycle
 
 ### Phase 3: Published CV Pages
@@ -73,7 +73,7 @@ Professional CV pages featuring:
 - **Database**: Supabase (PostgreSQL) with Row Level Security
 - **AI Integration**: OpenAI GPT models for content enhancement
 - **Image Processing**: Browser-side compression with Web Workers
-- **Performance**: Debounced auto-save and optimized form handling
+- **Performance**: Optimized form handling
 - **Deployment**: Netlify with custom domain
 - **Version Control**: GitHub ([bucklemeshoe/cv-enhancer](https://github.com/bucklemeshoe/cv-enhancer))
 
@@ -191,7 +191,6 @@ Professional URL Generation → Published CV → Employer Access
 ### **Performance & Scaling**
 - **Current Capacity**: Scalable to 10,000+ CVs with Supabase
 - **Database Storage**: PostgreSQL with optimized indexes
-- **Auto-save**: 60-80% reduction in server load
 - **Image Optimization**: 80-90% smaller file sizes
 - **CDN Optimized**: Global content delivery via Netlify
 
@@ -267,9 +266,10 @@ The platform successfully helps yacht crew candidates present their experience p
 - **Validation Pipeline** - Create comprehensive form validation pipeline before saves
 
 ### **Completed Optimizations** ✅
-- ✅ **Debounced Auto-Save** - Reduces database calls by 60-80%
 - ✅ **Client-Side Image Compression** - Reduces upload sizes by 80-90%
 - ✅ **CV Viewing Bug Fix** - Updated to use Supabase instead of file system
+- ✅ **Auto-Republish** - Published CVs update automatically on save
+- ✅ **Smart Merge + Validation** - Prevents data loss on partial updates
 
 *These optimizations are designed to maintain data integrity while significantly improving performance and user experience.*
 
@@ -277,4 +277,4 @@ The platform successfully helps yacht crew candidates present their experience p
 
 **Built with ❤️ by bucklemeshoe for Pull North Yachting**
 
-*Production System - Last Updated: January 2025* 
+*Production System - Last Updated: August 2025*
