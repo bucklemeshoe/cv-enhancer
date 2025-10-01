@@ -1,0 +1,29 @@
+name: Bugbot Analysis
+
+on:
+  pull_request:
+    branches: [ develop, main ]
+  push:
+    branches: [ develop, main ]
+
+jobs:
+  bugbot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Run Bugbot Analysis
+      uses: bugbotai/bugbot-action@v1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
