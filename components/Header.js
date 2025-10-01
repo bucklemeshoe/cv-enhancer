@@ -42,7 +42,7 @@ export default function Header({ header }) {
               <img
                 src={header.photo}
                 alt={header.name}
-                className="w-24 h-24 sm:w-28 sm:h-28 md:w-28 md:h-28 lg:w-24 lg:h-24 rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                className="w-[135px] h-[135px] sm:w-[157px] sm:h-[157px] md:w-[157px] md:h-[157px] lg:w-[135px] lg:h-[135px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
