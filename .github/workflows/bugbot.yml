@@ -9,6 +9,9 @@ on:
 jobs:
   bugbot:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cv-builder
     permissions:
       contents: read
       pull-requests: write
@@ -26,4 +29,5 @@ jobs:
       uses: bugbotai/bugbot-action@v1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: cv-builder
 
