@@ -176,7 +176,7 @@ export default function Header({ header }) {
               <img
                 src={header.photo}
                 alt={header.name}
-                className="w-24 h-24 rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                className="w-[135px] h-[135px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
