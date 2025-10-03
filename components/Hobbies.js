@@ -6,13 +6,9 @@ export default function Hobbies({ hobbies }) {
       <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-700 mb-4">
         Hobbies & Interests
       </h2>
-      <ul className="space-y-2">
-        {hobbies.map((hobby, index) => (
-          <li key={index} className="text-sm text-gray-700">
-            {hobby}
-          </li>
-        ))}
-      </ul>
+      <p className="text-sm text-gray-700">
+        {hobbies.join(', ')}
+      </p>
     </div>
   )
 } 
