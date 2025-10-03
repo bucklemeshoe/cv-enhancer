@@ -28,13 +28,9 @@ export default function PersonalInfo({ personalInformation }) {
         {personalInformation.languages && personalInformation.languages.length > 0 && (
           <div>
             <span className="font-medium text-gray-900">Languages:</span>
-            <div className="mt-1">
-              {personalInformation.languages.map((language, index) => (
-                <div key={index} className="text-gray-700 text-sm">
-                  {language}
-                </div>
-              ))}
-            </div>
+            <span className="ml-2 text-gray-700">
+              {personalInformation.languages.join(', ')}
+            </span>
           </div>
         )}
         

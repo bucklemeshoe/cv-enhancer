@@ -42,7 +42,7 @@ export default function Header({ header }) {
               <img
                 src={header.photo}
                 alt={header.name}
-                className="w-24 h-24 sm:w-28 sm:h-28 md:w-28 md:h-28 lg:w-24 lg:h-24 rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
@@ -176,7 +176,7 @@ export default function Header({ header }) {
               <img
                 src={header.photo}
                 alt={header.name}
-                className="w-24 h-24 rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                className="w-[138px] h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
