@@ -13,7 +13,7 @@ export default function PrintHeader({ header }) {
             <img
               src={header.photo}
               alt={header.name}
-              className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+              className="w-[138px] h-[138px] rounded-full object-cover border-2 border-gray-300"
               onError={(e) => {
                 e.target.style.display = 'none';
               }}
