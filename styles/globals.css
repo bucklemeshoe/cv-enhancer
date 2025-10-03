@@ -531,4 +531,51 @@ input[type="radio"]:hover {
     content: '';
     @apply absolute w-3 h-3 bg-blue-600 rounded-full -left-2 top-1;
   }
+}
+
+/* PDF Capture Styling - Applied when generating PDFs */
+.pdf-capturing .bg-white {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.pdf-capturing .rounded-lg,
+.pdf-capturing .shadow-sm,
+.pdf-capturing .border-gray-200,
+.pdf-capturing .border {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Reduce vertical padding for PDF */
+.pdf-capturing .py-6,
+.pdf-capturing .py-8 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.pdf-capturing .space-y-6 > *,
+.pdf-capturing .space-y-8 > * {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Remove padding from right column blocks (Personal Info, Skills, etc.) */
+.pdf-capturing .p-6 {
+  padding: 0 !important;
+}
+
+/* Increase margin below header by 50% */
+.pdf-capturing header {
+  margin-bottom: 3rem !important; /* 50% increase from default */
+}
+
+/* Hide wave SVGs from captured content */
+.pdf-capturing svg[viewBox="0 0 1440 320"] {
+  display: none !important;
+}
+
+.pdf-capturing [class*="WavePattern"] {
+  display: none !important;
 } 
