@@ -390,11 +390,11 @@ export default function Header({ header }) {
 
       {/* Video Modal - YouTube Story Style */}
       {isVideoModalOpen && header.videoUrl && (
-        <div className="fixed inset-0 z-50 bg-black">
+        <div className="fixed inset-0 z-50 bg-white bg-opacity-40">
           {/* Close Button */}
           <button
             onClick={() => setIsVideoModalOpen(false)}
-            className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 transition-colors"
+            className="absolute top-4 right-4 z-10 text-gray-800 hover:text-gray-600 transition-colors"
           >
             <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -418,7 +418,7 @@ export default function Header({ header }) {
               
               {/* Story-like UI Elements */}
               <div className="absolute bottom-4 left-4 right-4">
-                <div className="bg-black bg-opacity-50 rounded-full px-4 py-2">
+                <div className="bg-gray-800 bg-opacity-70 rounded-full px-4 py-2">
                   <p className="text-white text-sm text-center">
                     Tap outside to close
                   </p>
