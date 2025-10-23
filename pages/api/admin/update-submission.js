@@ -1,6 +1,7 @@
 import fs from 'fs'
 import formidable from 'formidable'
 import { createClient } from '@supabase/supabase-js'
+import { uploadProfilePhoto, deleteImage, extractPublicId, isCloudinaryUrl, isBase64DataUrl } from '../../../lib/cloudinary'
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -70,12 +71,34 @@ export default async function handler(req, res) {
       if (files.profilePicture) {
         const file = Array.isArray(files.profilePicture) ? files.profilePicture[0] : files.profilePicture
         
-        // Read file and convert to base64
-        const fileBuffer = fs.readFileSync(file.filepath)
-        const base64String = fileBuffer.toString('base64')
-        const mimeType = file.mimetype || 'image/jpeg'
-        
-        studentData.profilePicture = `data:${mimeType};base64,${base64String}`
+        try {
+          // Upload to Cloudinary for admin updates
+          const fileBuffer = fs.readFileSync(file.filepath)
+          const uploadResult = await uploadProfilePhoto(fileBuffer, {
+            public_id: `cv-builder/profile-photos/${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
+          })
+          
+          if (uploadResult.success) {
+            // Store Cloudinary URL
+            studentData.profilePicture = uploadResult.url
+            studentData.profilePictureCloudinary = uploadResult.url
+            studentData.profilePicturePublicId = uploadResult.public_id
+            console.log('Profile picture uploaded to Cloudinary:', uploadResult.url)
+          } else {
+            console.error('Cloudinary upload failed, falling back to base64:', uploadResult.error)
+            // Fallback to base64 if Cloudinary fails
+            const base64String = fileBuffer.toString('base64')
+            const mimeType = file.mimetype || 'image/jpeg'
+            studentData.profilePicture = `data:${mimeType};base64,${base64String}`
+          }
+        } catch (error) {
+          console.error('Error uploading to Cloudinary, falling back to base64:', error)
+          // Fallback to base64 if Cloudinary fails
+          const fileBuffer = fs.readFileSync(file.filepath)
+          const base64String = fileBuffer.toString('base64')
+          const mimeType = file.mimetype || 'image/jpeg'
+          studentData.profilePicture = `data:${mimeType};base64,${base64String}`
+        }
         
         // Clean up temporary file
         fs.unlinkSync(file.filepath)
@@ -123,9 +146,41 @@ export default async function handler(req, res) {
       
       // Skip null, undefined, or empty string values (preserve existing)
       if (newValue !== null && newValue !== undefined && newValue !== '') {
+        // If updating profile picture and new one is Cloudinary URL, clean up old Cloudinary image
+        if (key === 'profilePicture' && isCloudinaryUrl(newValue)) {
+          const oldProfilePicture = existingData.profilePicture
+          const oldPublicId = existingData.profilePicturePublicId
+          
+          // Delete old Cloudinary image if it exists
+          if (oldPublicId && isCloudinaryUrl(oldProfilePicture)) {
+            try {
+              const deleteResult = await deleteImage(oldPublicId)
+              if (deleteResult.success) {
+                console.log('Old Cloudinary image deleted:', oldPublicId)
+              } else {
+                console.warn('Failed to delete old Cloudinary image:', deleteResult.error)
+              }
+            } catch (error) {
+              console.warn('Error deleting old Cloudinary image:', error)
+            }
+          }
+        }
+        
         mergedData[key] = newValue
       } else if (key === 'profilePicture' && newValue === null) {
         // Special case: allow explicit removal of profile picture
+        // Also clean up old Cloudinary image if it exists
+        const oldPublicId = existingData.profilePicturePublicId
+        if (oldPublicId && isCloudinaryUrl(existingData.profilePicture)) {
+          try {
+            const deleteResult = await deleteImage(oldPublicId)
+            if (deleteResult.success) {
+              console.log('Old Cloudinary image deleted on removal:', oldPublicId)
+            }
+          } catch (error) {
+            console.warn('Error deleting old Cloudinary image on removal:', error)
+          }
+        }
         mergedData[key] = null
       }
       // For all other cases, keep existing value
