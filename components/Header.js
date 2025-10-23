@@ -195,9 +195,49 @@ export default function Header({ header }) {
         </div>
 
         {/* Desktop: Side-by-Side Layout */}
-        <div className="hidden lg:flex lg:items-start lg:justify-between lg:gap-8 transition-all duration-300 ease-in-out">
+        <div className="hidden lg:flex lg:items-start lg:gap-8 transition-all duration-300 ease-in-out">
           
-          {/* Left: Name, Title, and Contact Info */}
+          {/* Left: Profile Photo */}
+          {header.photo && (
+            <div className="relative flex-shrink-0">
+              {header.videoUrl ? (
+                <div 
+                  className="relative cursor-pointer group"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  onTouchEnd={() => setIsVideoModalOpen(true)}
+                >
+                  {/* Gradient Border */}
+                  <div className="w-[138px] h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-gradient">
+                    <div className="w-full h-full rounded-full bg-white p-1">
+                      <img
+                        src={header.photo}
+                        alt={header.name}
+                        className="w-full h-full rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    </div>
+                  </div>
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300">
+                    <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <svg className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={header.photo}
+                  alt={header.name}
+                  className="w-[138px] h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Right: Name, Title, and Contact Info */}
           <div className="flex-1">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
               {header.name}
@@ -241,50 +281,6 @@ export default function Header({ header }) {
               )}
             </div>
           </div>
-
-          {/* Right: Profile Photo */}
-          {header.photo && (
-            <div className="relative">
-              {header.videoUrl ? (
-                <div 
-                  className="relative cursor-pointer group"
-                  onClick={() => setIsVideoModalOpen(true)}
-                  onTouchEnd={() => setIsVideoModalOpen(true)}
-                >
-                  {/* Gradient Border */}
-                  <div className="w-[138px] h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-gradient">
-                    <div className="w-full h-full rounded-full bg-white p-1">
-                      <img
-                        src={header.photo}
-                        alt={header.name}
-                        className="w-full h-full rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300">
-                    <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <svg className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <img
-                  src={header.photo}
-                  alt={header.name}
-                  className="w-[138px] h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
-              )}
-            </div>
-          )}
         </div>
         </div>
       </header>
