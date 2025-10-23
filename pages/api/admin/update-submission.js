@@ -141,7 +141,7 @@ export default async function handler(req, res) {
     const mergedData = { ...existingData }
     
     // Only update fields that are actually provided (not null/undefined/empty)
-    Object.keys(studentData).forEach(key => {
+    for (const key of Object.keys(studentData)) {
       const newValue = studentData[key]
       
       // Skip null, undefined, or empty string values (preserve existing)
@@ -184,7 +184,7 @@ export default async function handler(req, res) {
         mergedData[key] = null
       }
       // For all other cases, keep existing value
-    })
+    }
     
     // DATA VALIDATION: Ensure critical fields are never lost (check AFTER merge)
     const criticalFields = ['firstName', 'lastName', 'email']
