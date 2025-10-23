@@ -47,7 +47,7 @@ export default function Header({ header }) {
                   onTouchEnd={() => setIsVideoModalOpen(true)}
                 >
                   {/* Gradient Border */}
-                  <div className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
+                  <div className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-gradient">
                     <div className="w-full h-full rounded-full bg-white p-1">
                       <img
                         src={header.photo}
@@ -211,7 +211,7 @@ export default function Header({ header }) {
                   onTouchEnd={() => setIsVideoModalOpen(true)}
                 >
                   {/* Gradient Border */}
-                  <div className="w-[138px] h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
+                  <div className="w-[138px] h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-gradient">
                     <div className="w-full h-full rounded-full bg-white p-1">
                       <img
                         src={header.photo}
