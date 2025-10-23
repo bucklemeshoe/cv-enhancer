@@ -12,7 +12,7 @@ export default function Header({ header }) {
     // Handle YouTube Shorts
     if (url.includes('youtube.com/shorts/')) {
       const videoId = url.split('/shorts/')[1]?.split('?')[0]
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
+      return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1`
     }
     
     // Handle regular YouTube videos
@@ -390,7 +390,10 @@ export default function Header({ header }) {
 
       {/* Video Modal - YouTube Story Style */}
       {isVideoModalOpen && header.videoUrl && (
-        <div className="fixed inset-0 z-50 bg-white bg-opacity-40">
+        <div 
+          className="fixed inset-0 z-50 bg-white bg-opacity-40"
+          onClick={() => setIsVideoModalOpen(false)}
+        >
           {/* Close Button */}
           <button
             onClick={() => setIsVideoModalOpen(false)}
@@ -403,21 +406,24 @@ export default function Header({ header }) {
 
           {/* Video Container - Full Screen Story Style */}
           <div className="flex items-center justify-center min-h-screen p-4">
-            <div className="relative w-full max-w-md mx-auto">
+            <div 
+              className="relative w-full max-w-md mx-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Video Frame - Mobile-first aspect ratio */}
               <div className="relative w-full" style={{ paddingBottom: '177.78%' }}> {/* 9:16 aspect ratio */}
                 <iframe
                   src={getEmbedUrl(header.videoUrl)}
                   className="absolute top-0 left-0 w-full h-full rounded-2xl"
                   frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                   allowFullScreen
                   title="Video Introduction"
                 />
               </div>
               
-              {/* Story-like UI Elements */}
-              <div className="absolute bottom-4 left-4 right-4">
+              {/* Story-like UI Elements - Below video */}
+              <div className="mt-4 flex justify-center">
                 <div className="bg-gray-800 bg-opacity-70 rounded-full px-4 py-2">
                   <p className="text-white text-sm text-center">
                     Tap outside to close

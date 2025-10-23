@@ -779,37 +779,36 @@ export default function Apply() {
                     <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                       <label htmlFor="videoUrl" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
                         Video Introduction
-                        <span className="text-gray-500 font-normal">(Optional)</span>
+                        <span className="text-gray-500 font-normal"> (Optional)</span>
                       </label>
                       <div className="mt-2 sm:col-span-2 sm:mt-0">
                         <div className="flex items-center gap-x-4">
-                          <div className="flex-1">
+                          <div className="flex-1 relative">
                             <input
                               type="url"
                               name="videoUrl"
                               id="videoUrl"
-                              value={formData.videoUrl}
+                              value={formData.videoUrl || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
-                              placeholder="https://youtube.com/shorts/... or https://tiktok.com/@.../video/..."
-                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              placeholder="Paste your URL here..."
+                              className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
-                          </div>
-                          {formData.videoUrl && (
-                            <div className="flex items-center gap-x-2">
-                              <div className="flex items-center space-x-1 text-sm text-green-600">
-                                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                            {formData.videoUrl && (
+                              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                <span>Video added</span>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => setFormData(prev => ({ ...prev, videoUrl: '' }))}
-                                className="text-sm text-rose-500 hover:text-rose-400"
-                              >
-                                Remove
-                              </button>
-                            </div>
+                            )}
+                          </div>
+                          {formData.videoUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setFormData(prev => ({ ...prev, videoUrl: null }))}
+                              className="rounded-md bg-rose-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-400"
+                            >
+                              Remove
+                            </button>
                           )}
                         </div>
                         <p className="mt-2 text-sm leading-6 text-gray-600">

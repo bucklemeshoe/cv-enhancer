@@ -36,23 +36,26 @@ The Cloudinary MCP servers have been successfully added to your configuration! T
 Your Cloudinary credentials have been configured! Here are your specific settings:
 
 ### Your Cloudinary Credentials
-- **Cloud Name**: `dokcs4daz`
-- **API Key**: `172165474278718`
-- **API Secret**: `qGhgTVutnXU6C_3MtSZ3XJ2MLTY`
-- **CLOUDINARY_URL**: `cloudinary://172165474278718:qGhgTVutnXU6C_3MtSZ3XJ2MLTY@dokcs4daz`
+- **Cloud Name**: `[YOUR_CLOUD_NAME]`
+- **API Key**: `[YOUR_API_KEY]`
+- **API Secret**: `[YOUR_API_SECRET]`
+- **CLOUDINARY_URL**: `cloudinary://[YOUR_API_KEY]:[YOUR_API_SECRET]@[YOUR_CLOUD_NAME]`
 
 ### Quick Setup
-Run the setup script to configure your environment:
+Set your environment variables:
 ```bash
-./setup-cloudinary-env.sh
+export CLOUDINARY_CLOUD_NAME="[YOUR_CLOUD_NAME]"
+export CLOUDINARY_API_KEY="[YOUR_API_KEY]"
+export CLOUDINARY_API_SECRET="[YOUR_API_SECRET]"
+export CLOUDINARY_URL="cloudinary://[YOUR_API_KEY]:[YOUR_API_SECRET]@[YOUR_CLOUD_NAME]"
 ```
 
 ### Manual Environment Variables
 ```bash
-export CLOUDINARY_CLOUD_NAME="dokcs4daz"
-export CLOUDINARY_API_KEY="172165474278718"
-export CLOUDINARY_API_SECRET="qGhgTVutnXU6C_3MtSZ3XJ2MLTY"
-export CLOUDINARY_URL="cloudinary://172165474278718:qGhgTVutnXU6C_3MtSZ3XJ2MLTY@dokcs4daz"
+export CLOUDINARY_CLOUD_NAME="[YOUR_CLOUD_NAME]"
+export CLOUDINARY_API_KEY="[YOUR_API_KEY]"
+export CLOUDINARY_API_SECRET="[YOUR_API_SECRET]"
+export CLOUDINARY_URL="cloudinary://[YOUR_API_KEY]:[YOUR_API_SECRET]@[YOUR_CLOUD_NAME]"
 ```
 
 ### MediaFlows Configuration

@@ -186,6 +186,10 @@ export default async function handler(req, res) {
           }
         }
         mergedData[key] = null
+      } else if (key === 'videoUrl' && newValue === null) {
+        // Special case: allow explicit removal of video URL
+        console.log('Removing video URL from submission')
+        mergedData[key] = null
       }
       // For all other cases, keep existing value
     }
@@ -224,6 +228,8 @@ export default async function handler(req, res) {
 
     // If this submission is published, also update the published CV
     if (submission.status === 'published') {
+      console.log('🔄 Syncing published CV with updated data...')
+      console.log('  Video URL in update:', mergedData.videoUrl)
       
       // Use the latest merged data (preserves enhanced_data if available, otherwise uses merged data)
       const cvData = submission.enhanced_data || mergedData
@@ -243,7 +249,8 @@ export default async function handler(req, res) {
           phone: cvData.phone,
           location: cvData.location,
           website: cvData.website || null,
-          photo: cvData.profilePicture || null
+          photo: cvData.profilePicture || null,
+          videoUrl: cvData.videoUrl && cvData.videoUrl.trim() !== '' ? cvData.videoUrl : null
         },
         personalInformation: {
           location: cvData.location,
@@ -265,7 +272,8 @@ export default async function handler(req, res) {
         hobbiesAndInterests: typeof cvData.hobbiesAndInterests === 'string' 
           ? cvData.hobbiesAndInterests.split(',').map(h => h.trim()).filter(h => h) 
           : cvData.hobbiesAndInterests?.filter(h => h) || [],
-        references: cvData.references?.filter(r => r.name) || []
+        references: cvData.references?.filter(r => r.name) || [],
+        videoUrl: cvData.videoUrl && cvData.videoUrl.trim() !== '' ? cvData.videoUrl : null
       }
 
       // Update the published CV in Supabase
@@ -284,6 +292,9 @@ export default async function handler(req, res) {
       if (publishedUpdateError) {
         console.error('Error updating published CV:', publishedUpdateError)
         // Don't fail the entire request if published CV update fails
+      } else {
+        console.log('✅ Published CV synced successfully')
+        console.log('  Video URL synced:', publishedCV.header.videoUrl)
       }
     }
 
