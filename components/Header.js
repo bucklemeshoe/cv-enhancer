@@ -3,6 +3,48 @@ import { useState, useEffect } from 'react'
 export default function Header({ header }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPdfCapturing, setIsPdfCapturing] = useState(false)
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
+
+  // Convert YouTube Shorts URL to embed URL
+  const getEmbedUrl = (url) => {
+    if (!url) return ''
+    
+    // Handle YouTube Shorts
+    if (url.includes('youtube.com/shorts/')) {
+      const videoId = url.split('/shorts/')[1]?.split('?')[0]
+      return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1`
+    }
+    
+    // Handle regular YouTube videos
+    if (url.includes('youtube.com/watch')) {
+      const videoId = url.split('v=')[1]?.split('&')[0]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
+    }
+    
+    // Handle youtu.be links
+    if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
+    }
+    
+    // Handle TikTok (convert to embed)
+    if (url.includes('tiktok.com')) {
+      return url // TikTok URLs work directly in iframe
+    }
+    
+    // Handle Instagram Reels
+    if (url.includes('instagram.com')) {
+      return url // Instagram URLs work directly in iframe
+    }
+    
+    // Handle Vimeo
+    if (url.includes('vimeo.com')) {
+      const videoId = url.split('vimeo.com/')[1]?.split('?')[0]
+      return `https://player.vimeo.com/video/${videoId}?autoplay=1`
+    }
+    
+    return url
+  }
 
   useEffect(() => {
     // Watch for PDF capturing class changes
@@ -38,15 +80,45 @@ export default function Header({ header }) {
           
           {/* Profile Photo at Top */}
           {header.photo && (
-            <div>
-              <img
-                src={header.photo}
-                alt={header.name}
-                className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
+            <div className="relative">
+              {header.videoUrl ? (
+                <div 
+                  className="relative cursor-pointer group"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  onTouchEnd={() => setIsVideoModalOpen(true)}
+                >
+                  {/* Gradient Border */}
+                  <div className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-gradient">
+                    <div className="w-full h-full rounded-full bg-white p-1">
+                      <img
+                        src={header.photo}
+                        alt={header.name}
+                        className="w-full h-full rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300">
+                    <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <svg className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={header.photo}
+                  alt={header.name}
+                  className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
             </div>
           )}
           
@@ -172,15 +244,45 @@ export default function Header({ header }) {
 
           {/* Right: Profile Photo */}
           {header.photo && (
-            <div>
-              <img
-                src={header.photo}
-                alt={header.name}
-                className="w-[138px] h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
+            <div className="relative">
+              {header.videoUrl ? (
+                <div 
+                  className="relative cursor-pointer group"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  onTouchEnd={() => setIsVideoModalOpen(true)}
+                >
+                  {/* Gradient Border */}
+                  <div className="w-[138px] h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-gradient">
+                    <div className="w-full h-full rounded-full bg-white p-1">
+                      <img
+                        src={header.photo}
+                        alt={header.name}
+                        className="w-full h-full rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300">
+                    <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <svg className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={header.photo}
+                  alt={header.name}
+                  className="w-[138px] h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
@@ -280,6 +382,53 @@ export default function Header({ header }) {
                 <p className="text-xs text-gray-500 text-center">
                   Tap any contact method to get in touch immediately
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Video Modal - YouTube Story Style */}
+      {isVideoModalOpen && header.videoUrl && (
+        <div 
+          className="fixed inset-0 z-50 bg-white bg-opacity-40"
+          onClick={() => setIsVideoModalOpen(false)}
+        >
+          {/* Close Button */}
+          <button
+            onClick={() => setIsVideoModalOpen(false)}
+            className="absolute top-4 right-4 z-10 text-gray-800 hover:text-gray-600 transition-colors"
+          >
+            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* Video Container - Full Screen Story Style */}
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div 
+              className="relative w-full max-w-md mx-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Video Frame - Mobile-first aspect ratio */}
+              <div className="relative w-full" style={{ paddingBottom: '177.78%' }}> {/* 9:16 aspect ratio */}
+                <iframe
+                  src={getEmbedUrl(header.videoUrl)}
+                  className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  allowFullScreen
+                  title="Video Introduction"
+                />
+              </div>
+              
+              {/* Story-like UI Elements - Below video */}
+              <div className="mt-4 flex justify-center">
+                <div className="bg-gray-800 bg-opacity-70 rounded-full px-4 py-2">
+                  <p className="text-white text-sm text-center">
+                    Tap outside to close
+                  </p>
+                </div>
               </div>
             </div>
           </div>

@@ -578,4 +578,23 @@ input[type="radio"]:hover {
 
 .pdf-capturing [class*="WavePattern"] {
   display: none !important;
+}
+
+/* Animated gradient border for video profile pictures */
+@keyframes gradient-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background: linear-gradient(-45deg, #3b82f6, #06b6d4, #10b981, #3b82f6, #06b6d4, #10b981);
+  background-size: 400% 400%;
+  animation: gradient-move 3s ease infinite;
 } 

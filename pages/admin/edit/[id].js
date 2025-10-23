@@ -43,6 +43,7 @@ export default function EditCV() {
     visa: [''],
     health: '',
     profilePicture: null,
+    videoUrl: null,
     
     // Professional Information
     targetRole: '',
@@ -442,7 +443,10 @@ export default function EditCV() {
           // Additional Info
           availability: data.availability || '',
           salaryExpectation: data.salaryExpectation || '',
-          additionalNotes: data.additionalNotes || ''
+          additionalNotes: data.additionalNotes || '',
+          
+          // Video URL
+          videoUrl: data.videoUrl || null
         }
         
         // Validate form structure in development
@@ -1288,6 +1292,58 @@ export default function EditCV() {
                         <p className="mt-2 text-sm leading-6 text-gray-600">
                           JPG, PNG or WebP. Maximum file size 5MB.
                         </p>
+                      </div>
+                    </div>
+
+                    {/* Video URL Field */}
+                    <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                      <label htmlFor="videoUrl" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
+                        Video Introduction
+                        <span className="text-gray-500 font-normal"> (Optional)</span>
+                      </label>
+                      <div className="mt-2 sm:col-span-2 sm:mt-0">
+                        <div className="flex items-center gap-x-4">
+                          <div className="flex-1 relative">
+                            <input
+                              type="url"
+                              name="videoUrl"
+                              id="videoUrl"
+                              value={formData.videoUrl || ''}
+                              onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+                              placeholder="Paste your URL here..."
+                              className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                            {formData.videoUrl && (
+                              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          {formData.videoUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setFormData(prev => ({ ...prev, videoUrl: null }))}
+                              className="rounded-md bg-rose-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-400"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-gray-600">
+                          Add a YouTube Short, TikTok, or Instagram Reel to showcase personality and skills.
+                        </p>
+                        {formData.videoUrl && (
+                          <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
+                            <div className="flex items-center space-x-2 text-sm text-blue-700">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                              </svg>
+                              <span>Profile picture will have a special gradient border to indicate the video!</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 

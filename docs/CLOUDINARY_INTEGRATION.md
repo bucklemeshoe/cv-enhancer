@@ -92,10 +92,10 @@ if (isCloudinaryUrl(newValue)) {
 ### **Environment Variables**
 ```bash
 # Add to .env.local
-CLOUDINARY_CLOUD_NAME=dokcs4daz
-CLOUDINARY_API_KEY=172165474278718
-CLOUDINARY_API_SECRET=qGhgTVutnXU6C_3MtSZ3XJ2MLTY
-CLOUDINARY_URL=cloudinary://172165474278718:qGhgTVutnXU6C_3MtSZ3XJ2MLTY@dokcs4daz
+CLOUDINARY_CLOUD_NAME=[YOUR_CLOUD_NAME]
+CLOUDINARY_API_KEY=[YOUR_API_KEY]
+CLOUDINARY_API_SECRET=[YOUR_API_SECRET]
+CLOUDINARY_URL=cloudinary://[YOUR_API_KEY]:[YOUR_API_SECRET]@[YOUR_CLOUD_NAME]
 ```
 
 ### **Testing Integration**
@@ -111,8 +111,8 @@ node scripts/migrate-to-cloudinary.js
 ```sql
 -- New fields in student_data JSONB:
 {
-  "profilePicture": "https://res.cloudinary.com/dokcs4daz/image/upload/v1234567890/cv-builder/profile-photos/john-doe.jpg",
-  "profilePictureCloudinary": "https://res.cloudinary.com/dokcs4daz/image/upload/v1234567890/cv-builder/profile-photos/john-doe.jpg",
+  "profilePicture": "https://res.cloudinary.com/[YOUR_CLOUD_NAME]/image/upload/v1234567890/cv-builder/profile-photos/john-doe.jpg",
+  "profilePictureCloudinary": "https://res.cloudinary.com/[YOUR_CLOUD_NAME]/image/upload/v1234567890/cv-builder/profile-photos/john-doe.jpg",
   "profilePicturePublicId": "cv-builder/profile-photos/john-doe-1234567890",
   "profilePictureLegacy": "data:image/jpeg;base64,/9j/4AAQ..." // Backup during migration
 }
