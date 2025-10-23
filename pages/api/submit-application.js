@@ -1,6 +1,7 @@
 import formidable from 'formidable'
 import fs from 'fs'
 import { createClient } from '@supabase/supabase-js'
+import { uploadProfilePhoto, isCloudinaryUrl, isBase64DataUrl } from '../../lib/cloudinary'
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -46,12 +47,34 @@ export default async function handler(req, res) {
     if (files.profilePicture) {
       const file = Array.isArray(files.profilePicture) ? files.profilePicture[0] : files.profilePicture
       
-      // Read file and convert to base64
-      const fileBuffer = fs.readFileSync(file.filepath)
-      const base64String = fileBuffer.toString('base64')
-      const mimeType = file.mimetype || 'image/jpeg'
-      
-      formData.profilePicture = `data:${mimeType};base64,${base64String}`
+      try {
+        // Upload to Cloudinary for new submissions
+        const fileBuffer = fs.readFileSync(file.filepath)
+        const uploadResult = await uploadProfilePhoto(fileBuffer, {
+          public_id: `cv-builder/profile-photos/${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
+        })
+        
+        if (uploadResult.success) {
+          // Store Cloudinary URL
+          formData.profilePicture = uploadResult.url
+          formData.profilePictureCloudinary = uploadResult.url
+          formData.profilePicturePublicId = uploadResult.public_id
+          console.log('Profile picture uploaded to Cloudinary:', uploadResult.url)
+        } else {
+          console.error('Cloudinary upload failed, falling back to base64:', uploadResult.error)
+          // Fallback to base64 if Cloudinary fails
+          const base64String = fileBuffer.toString('base64')
+          const mimeType = file.mimetype || 'image/jpeg'
+          formData.profilePicture = `data:${mimeType};base64,${base64String}`
+        }
+      } catch (error) {
+        console.error('Error uploading to Cloudinary, falling back to base64:', error)
+        // Fallback to base64 if Cloudinary fails
+        const fileBuffer = fs.readFileSync(file.filepath)
+        const base64String = fileBuffer.toString('base64')
+        const mimeType = file.mimetype || 'image/jpeg'
+        formData.profilePicture = `data:${mimeType};base64,${base64String}`
+      }
       
       // Clean up temporary file
       fs.unlinkSync(file.filepath)
