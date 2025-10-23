@@ -61,6 +61,9 @@ export default async function handler(req, res) {
             } catch (e) {
               studentData[key] = value
             }
+          } else if (key === 'videoUrl') {
+            // Handle video URL - validate and store
+            studentData[key] = value
           } else {
             studentData[key] = value
           }

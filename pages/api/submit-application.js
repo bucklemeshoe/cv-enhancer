@@ -38,6 +38,9 @@ export default async function handler(req, res) {
         } catch (e) {
           formData[key] = value
         }
+      } else if (key === 'videoUrl') {
+        // Handle video URL - validate and store
+        formData[key] = value
       } else {
         formData[key] = value
       }

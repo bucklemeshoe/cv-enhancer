@@ -20,6 +20,7 @@ export default function Apply() {
     visa: [''],
     health: '',
     profilePicture: null,
+    videoUrl: '',
     
     // Professional Information
     targetRole: '',
@@ -72,6 +73,7 @@ export default function Apply() {
       { key: 'visa', required: false, isArray: true },
       { key: 'health', required: false },
       { key: 'profilePicture', required: false, isFile: true },
+      { key: 'videoUrl', required: false },
       
       // Professional Information (2 fields)
       { key: 'targetRole', required: true },
@@ -306,6 +308,7 @@ export default function Apply() {
           visa: [''],
           health: '',
           profilePicture: null,
+          videoUrl: '',
           targetRole: '',
           experience: [{ role: '', vesselOrCompany: '', startDate: '', endDate: '', location: '', vesselDetails: '', bullets: [''] }],
           skills: '',
@@ -769,6 +772,59 @@ export default function Apply() {
                         <p className="mt-2 text-sm leading-6 text-gray-600">
                           JPG, PNG or WebP. Maximum file size 5MB.
                         </p>
+                      </div>
+                    </div>
+
+                    {/* Video URL Field */}
+                    <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                      <label htmlFor="videoUrl" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
+                        Video Introduction
+                        <span className="text-gray-500 font-normal">(Optional)</span>
+                      </label>
+                      <div className="mt-2 sm:col-span-2 sm:mt-0">
+                        <div className="flex items-center gap-x-4">
+                          <div className="flex-1">
+                            <input
+                              type="url"
+                              name="videoUrl"
+                              id="videoUrl"
+                              value={formData.videoUrl}
+                              onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+                              placeholder="https://youtube.com/shorts/... or https://tiktok.com/@.../video/..."
+                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                          </div>
+                          {formData.videoUrl && (
+                            <div className="flex items-center gap-x-2">
+                              <div className="flex items-center space-x-1 text-sm text-green-600">
+                                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span>Video added</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, videoUrl: '' }))}
+                                className="text-sm text-rose-500 hover:text-rose-400"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-gray-600">
+                          Add a YouTube Short, TikTok, or Instagram Reel to showcase your personality and skills.
+                        </p>
+                        {formData.videoUrl && (
+                          <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
+                            <div className="flex items-center space-x-2 text-sm text-blue-700">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                              </svg>
+                              <span>Your profile picture will have a special gradient border to indicate the video!</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 

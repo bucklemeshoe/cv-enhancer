@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 export default function Header({ header }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPdfCapturing, setIsPdfCapturing] = useState(false)
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   useEffect(() => {
     // Watch for PDF capturing class changes
@@ -38,15 +39,45 @@ export default function Header({ header }) {
           
           {/* Profile Photo at Top */}
           {header.photo && (
-            <div>
-              <img
-                src={header.photo}
-                alt={header.name}
-                className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
+            <div className="relative">
+              {header.videoUrl ? (
+                <div 
+                  className="relative cursor-pointer group"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  onTouchEnd={() => setIsVideoModalOpen(true)}
+                >
+                  {/* Gradient Border */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
+                    <div className="w-full h-full rounded-full bg-white p-1">
+                      <img
+                        src={header.photo}
+                        alt={header.name}
+                        className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300">
+                    <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <svg className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={header.photo}
+                  alt={header.name}
+                  className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
             </div>
           )}
           
@@ -172,15 +203,45 @@ export default function Header({ header }) {
 
           {/* Right: Profile Photo */}
           {header.photo && (
-            <div>
-              <img
-                src={header.photo}
-                alt={header.name}
-                className="w-[138px] h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
+            <div className="relative">
+              {header.videoUrl ? (
+                <div 
+                  className="relative cursor-pointer group"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  onTouchEnd={() => setIsVideoModalOpen(true)}
+                >
+                  {/* Gradient Border */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
+                    <div className="w-full h-full rounded-full bg-white p-1">
+                      <img
+                        src={header.photo}
+                        alt={header.name}
+                        className="w-[138px] h-[138px] rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300">
+                    <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <svg className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={header.photo}
+                  alt={header.name}
+                  className="w-[138px] h-[138px] rounded-full object-cover border-4 border-gray-300 transition-all duration-300 ease-in-out"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
@@ -279,6 +340,56 @@ export default function Header({ header }) {
               <div className="px-4 md:px-6 py-3 md:py-4 bg-gray-50 rounded-b-lg">
                 <p className="text-xs text-gray-500 text-center">
                   Tap any contact method to get in touch immediately
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Video Modal */}
+      {isVideoModalOpen && header.videoUrl && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-75 transition-opacity"
+            onClick={() => setIsVideoModalOpen(false)}
+          ></div>
+          
+          {/* Modal */}
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="relative bg-black rounded-lg shadow-xl max-w-4xl w-full mx-auto">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                <h3 className="text-lg font-semibold text-white">Video Introduction</h3>
+                <button
+                  onClick={() => setIsVideoModalOpen(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Video Content */}
+              <div className="p-4">
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    src={header.videoUrl}
+                    className="absolute top-0 left-0 w-full h-full rounded-lg"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Video Introduction"
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-4 py-3 bg-gray-900 rounded-b-lg">
+                <p className="text-sm text-gray-400 text-center">
+                  Tap outside the video to close
                 </p>
               </div>
             </div>
