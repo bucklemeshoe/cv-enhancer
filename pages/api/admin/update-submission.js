@@ -63,7 +63,8 @@ export default async function handler(req, res) {
             }
           } else if (key === 'videoUrl') {
             // Handle video URL - validate and store
-            studentData[key] = value
+            // If empty string, set to null to properly remove the video
+            studentData[key] = value && value.trim() !== '' ? value : null
           } else {
             studentData[key] = value
           }

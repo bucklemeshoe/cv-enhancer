@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         location: cvData.location,
         website: cvData.website || null,
         photo: cvData.profilePicture || null,
-        videoUrl: cvData.videoUrl || null
+        videoUrl: cvData.videoUrl && cvData.videoUrl.trim() !== '' ? cvData.videoUrl : null
       },
       personalInformation: {
         location: cvData.location,
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
         ? cvData.hobbiesAndInterests.split(',').map(h => h.trim()).filter(h => h) 
         : cvData.hobbiesAndInterests?.filter(h => h) || [],
       references: cvData.references?.filter(r => r.name) || [],
-      videoUrl: cvData.videoUrl || null
+      videoUrl: cvData.videoUrl && cvData.videoUrl.trim() !== '' ? cvData.videoUrl : null
     }
 
     const publishedAt = new Date().toISOString()
