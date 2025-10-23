@@ -47,12 +47,12 @@ export default function Header({ header }) {
                   onTouchEnd={() => setIsVideoModalOpen(true)}
                 >
                   {/* Gradient Border */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
+                  <div className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
                     <div className="w-full h-full rounded-full bg-white p-1">
                       <img
                         src={header.photo}
                         alt={header.name}
-                        className="w-[138px] h-[138px] sm:w-[161px] sm:h-[161px] md:w-[161px] md:h-[161px] lg:w-[138px] lg:h-[138px] rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        className="w-full h-full rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}
@@ -211,12 +211,12 @@ export default function Header({ header }) {
                   onTouchEnd={() => setIsVideoModalOpen(true)}
                 >
                   {/* Gradient Border */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
+                  <div className="w-[138px] h-[138px] rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 p-1 animate-pulse">
                     <div className="w-full h-full rounded-full bg-white p-1">
                       <img
                         src={header.photo}
                         alt={header.name}
-                        className="w-[138px] h-[138px] rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        className="w-full h-full rounded-full object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}

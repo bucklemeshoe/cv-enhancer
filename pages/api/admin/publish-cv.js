@@ -33,6 +33,11 @@ export default async function handler(req, res) {
     // Create the CV data for publication
     const cvData = submission.enhanced_data || submission.student_data
     
+    // Debug: Log video URL
+    console.log('🔍 Publish CV Debug:')
+    console.log('  Video URL in cvData:', cvData.videoUrl)
+    console.log('  Profile Picture exists:', !!cvData.profilePicture)
+    
     // Generate concatenated slug: firstname-lastname-uniqueid
     const firstName = cvData.firstName.toLowerCase().replace(/\s+/g, '-')
     const lastName = cvData.lastName.toLowerCase().replace(/\s+/g, '-')
@@ -48,7 +53,8 @@ export default async function handler(req, res) {
         phone: cvData.phone,
         location: cvData.location,
         website: cvData.website || null,
-        photo: cvData.profilePicture || null
+        photo: cvData.profilePicture || null,
+        videoUrl: cvData.videoUrl || null
       },
       personalInformation: {
         location: cvData.location,
@@ -70,7 +76,8 @@ export default async function handler(req, res) {
       hobbiesAndInterests: typeof cvData.hobbiesAndInterests === 'string' 
         ? cvData.hobbiesAndInterests.split(',').map(h => h.trim()).filter(h => h) 
         : cvData.hobbiesAndInterests?.filter(h => h) || [],
-      references: cvData.references?.filter(r => r.name) || []
+      references: cvData.references?.filter(r => r.name) || [],
+      videoUrl: cvData.videoUrl || null
     }
 
     const publishedAt = new Date().toISOString()
