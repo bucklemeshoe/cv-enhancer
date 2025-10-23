@@ -5,6 +5,47 @@ export default function Header({ header }) {
   const [isPdfCapturing, setIsPdfCapturing] = useState(false)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
+  // Convert YouTube Shorts URL to embed URL
+  const getEmbedUrl = (url) => {
+    if (!url) return ''
+    
+    // Handle YouTube Shorts
+    if (url.includes('youtube.com/shorts/')) {
+      const videoId = url.split('/shorts/')[1]?.split('?')[0]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
+    }
+    
+    // Handle regular YouTube videos
+    if (url.includes('youtube.com/watch')) {
+      const videoId = url.split('v=')[1]?.split('&')[0]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
+    }
+    
+    // Handle youtu.be links
+    if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`
+    }
+    
+    // Handle TikTok (convert to embed)
+    if (url.includes('tiktok.com')) {
+      return url // TikTok URLs work directly in iframe
+    }
+    
+    // Handle Instagram Reels
+    if (url.includes('instagram.com')) {
+      return url // Instagram URLs work directly in iframe
+    }
+    
+    // Handle Vimeo
+    if (url.includes('vimeo.com')) {
+      const videoId = url.split('vimeo.com/')[1]?.split('?')[0]
+      return `https://player.vimeo.com/video/${videoId}?autoplay=1`
+    }
+    
+    return url
+  }
+
   useEffect(() => {
     // Watch for PDF capturing class changes
     const observer = new MutationObserver((mutations) => {
@@ -347,50 +388,41 @@ export default function Header({ header }) {
         </div>
       )}
 
-      {/* Video Modal */}
+      {/* Video Modal - YouTube Story Style */}
       {isVideoModalOpen && header.videoUrl && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-75 transition-opacity"
+        <div className="fixed inset-0 z-50 bg-black">
+          {/* Close Button */}
+          <button
             onClick={() => setIsVideoModalOpen(false)}
-          ></div>
-          
-          {/* Modal */}
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div className="relative bg-black rounded-lg shadow-xl max-w-4xl w-full mx-auto">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h3 className="text-lg font-semibold text-white">Video Introduction</h3>
-                <button
-                  onClick={() => setIsVideoModalOpen(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+            className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 transition-colors"
+          >
+            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
 
-              {/* Video Content */}
-              <div className="p-4">
-                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                  <iframe
-                    src={header.videoUrl}
-                    className="absolute top-0 left-0 w-full h-full rounded-lg"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Video Introduction"
-                  />
+          {/* Video Container - Full Screen Story Style */}
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="relative w-full max-w-md mx-auto">
+              {/* Video Frame - Mobile-first aspect ratio */}
+              <div className="relative w-full" style={{ paddingBottom: '177.78%' }}> {/* 9:16 aspect ratio */}
+                <iframe
+                  src={getEmbedUrl(header.videoUrl)}
+                  className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  title="Video Introduction"
+                />
+              </div>
+              
+              {/* Story-like UI Elements */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="bg-black bg-opacity-50 rounded-full px-4 py-2">
+                  <p className="text-white text-sm text-center">
+                    Tap outside to close
+                  </p>
                 </div>
-              </div>
-
-              {/* Footer */}
-              <div className="px-4 py-3 bg-gray-900 rounded-b-lg">
-                <p className="text-sm text-gray-400 text-center">
-                  Tap outside the video to close
-                </p>
               </div>
             </div>
           </div>
