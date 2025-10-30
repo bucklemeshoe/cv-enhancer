@@ -65,6 +65,9 @@ export default async function handler(req, res) {
             // Handle video URL - validate and store
             // If empty string, set to null to properly remove the video
             studentData[key] = value && value.trim() !== '' ? value : null
+          } else if (key === 'showBadge') {
+            // Handle badge toggle - convert string to boolean
+            studentData[key] = value === 'true' || value === true
           } else {
             studentData[key] = value
           }
@@ -79,7 +82,7 @@ export default async function handler(req, res) {
           // Upload to Cloudinary for admin updates
           const fileBuffer = fs.readFileSync(file.filepath)
           const uploadResult = await uploadProfilePhoto(fileBuffer, {
-            public_id: `cv-builder/profile-photos/${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
+            public_id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
           })
           
           if (uploadResult.success) {
@@ -250,7 +253,8 @@ export default async function handler(req, res) {
           location: cvData.location,
           website: cvData.website || null,
           photo: cvData.profilePicture || null,
-          videoUrl: cvData.videoUrl && cvData.videoUrl.trim() !== '' ? cvData.videoUrl : null
+          videoUrl: cvData.videoUrl && cvData.videoUrl.trim() !== '' ? cvData.videoUrl : null,
+          showBadge: cvData.showBadge || false
         },
         personalInformation: {
           location: cvData.location,

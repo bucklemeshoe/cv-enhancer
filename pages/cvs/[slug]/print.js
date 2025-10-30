@@ -2,7 +2,6 @@ import Head from 'next/head'
 import { createClient } from '@supabase/supabase-js'
 
 // Import digital CV components (same as main CV page)
-import Header from '../../../components/Header'
 import PersonalInfo from '../../../components/PersonalInfo'
 import Skills from '../../../components/Skills'
 import Profile from '../../../components/Profile'
@@ -34,8 +33,68 @@ export default function PrintCV({ cvData, slug }) {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <link rel="stylesheet" href="/styles/print.css" media="all" />
+        <link rel="stylesheet" href="/styles/print.css" media="print" />
         <style>{`
+          /* Set base font size for better readability - applies to screen */
+          .print-cv {
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+          }
+          
+          /* Force fixed width layout - disable all responsive behavior */
+          .cv-content {
+            width: 1500px !important;
+            max-width: 1500px !important;
+            min-width: 1500px !important;
+            margin: 0 auto !important;
+          }
+          
+          .cv-content .grid {
+            display: grid !important;
+            grid-template-columns: repeat(12, 1fr) !important;
+            gap: 1.5rem !important;
+            width: 100% !important;
+          }
+          
+          .cv-content .col-span-4 {
+            grid-column: span 4 !important;
+            display: block !important;
+          }
+          
+          .cv-content .col-span-8 {
+            grid-column: span 8 !important;
+            display: block !important;
+          }
+          
+          /* Override all responsive classes */
+          .cv-content * {
+            min-width: auto !important;
+            max-width: none !important;
+          }
+          
+          /* Ensure all text is readable on screen */
+          .cv-content p, .cv-content li, .cv-content span {
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+          }
+          
+          /* Headings on screen */
+          .cv-content h1 {
+            font-size: 28px !important;
+          }
+          
+          .cv-content h2 {
+            font-size: 16px !important;
+          }
+          
+          .cv-content h3 {
+            font-size: 16px !important;
+          }
+          
+          .cv-content h4 {
+            font-size: 16px !important;
+          }
+          
           /* Remove bounding boxes for print */
           .cv-content .bg-white {
             background: transparent !important;
@@ -81,26 +140,100 @@ export default function PrintCV({ cvData, slug }) {
             display: none !important;
           }
           
-          /* Align header content with body content */
-          .cv-content header {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+          /* Hide badge in header (we'll show it below references instead) */
+          header img[src="/shape_converted.png"],
+          header img[alt="Pull North Badge"] {
+            display: none !important;
           }
           
-          .cv-content header > div {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+          /* Hide the badge container in the header */
+          header .relative.flex-shrink-0.mr-\\[56px\\] {
+            display: none !important;
           }
           
-          .cv-content header .max-w-7xl {
-            max-width: 100% !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+          /* Hide the entire header on print page (we show info in right column) */
+          header {
+            display: none !important;
           }
+          
+          /* Header is hidden, so remove unused header styles */
           
           /* Professional Summary text size */
           #summary p {
-            font-size: 12px !important;
+            font-size: 16px !important;
+          }
+          
+          /* Hide wave patterns */
+          svg[viewBox="0 0 1440 320"] {
+            display: none !important;
+          }
+          
+          /* PNG icons are handled in the Header component via isPrintPage prop */
+          
+          /* Fix icon alignment in Contact Information section */
+          .col-span-4 .flex.items-center {
+            display: flex !important;
+            align-items: center !important;
+          }
+          
+          .col-span-4 .flex.items-center img {
+            vertical-align: middle !important;
+            align-self: center !important;
+          }
+          
+          /* Fix profile image aspect ratio in PDF */
+          .profile-image {
+            width: 186px !important;
+            height: 186px !important;
+            min-width: 186px !important;
+            min-height: 186px !important;
+            max-width: 186px !important;
+            max-height: 186px !important;
+            object-fit: cover !important;
+            object-position: center !important;
+            border-radius: 50% !important;
+            aspect-ratio: 1 / 1 !important;
+            display: block !important;
+            flex-shrink: 0 !important;
+          }
+          
+          /* Ensure the container doesn't compress the image */
+          .profile-image + * {
+            margin-top: 1rem !important;
+          }
+          
+          /* Header is hidden, so contact info styles not needed */
+          
+          /* Remove teal dots from work experience */
+          #experience .w-2.h-2.rounded-full,
+          #experience div[style*="background-color: #5bb3b8"] {
+            display: none !important;
+          }
+          
+          /* Adjust left padding since dots are removed */
+          #experience .pl-6 {
+            padding-left: 0 !important;
+          }
+          
+          /* Skills: Show underlined text view instead of pills */
+          #skills .inline-flex.items-center {
+            display: inline-block !important;
+            background-color: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            color: #1f2937 !important;
+            text-decoration: underline !important;
+            text-decoration-color: #5bb3b8 !important;
+            text-underline-offset: 3px !important;
+            text-decoration-thickness: 2px !important;
+          }
+          
+          /* Certifications: Two column grid */
+          #certifications ul {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem !important;
           }
           
           /* Multi-page print handling */
@@ -154,7 +287,7 @@ export default function PrintCV({ cvData, slug }) {
                     noPrintSection.style.display = 'none';
                     
                     // Capture the CV content
-                    const cvElement = document.querySelector('.print-container');
+                    const cvElement = document.querySelector('.cv-content');
                     const canvas = await html2canvas(cvElement, {
                       scale: 2, // Higher quality
                       useCORS: true,
@@ -221,35 +354,68 @@ export default function PrintCV({ cvData, slug }) {
             </svg>
             
             <div className="mx-auto px-8">
-              {/* Header - Same as digital */}
-              <Header header={cvData.header} />
-              
-              {/* Main Content - Two Column Grid (Same as digital) */}
+              {/* Main Content - Two Column Grid with header in left column */}
               <div className="py-4">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="grid grid-cols-12 gap-6">
                 
-                {/* Left Column (≈ 65%) - Main Content */}
-                <div className="md:col-span-8 space-y-6 lg:space-y-8">
+                {/* Left Column (≈ 33%) - Profile, Contact, etc. */}
+                <div className="col-span-4 space-y-6" style={{ backgroundColor: '#eef8f9', padding: '1.5rem', borderRadius: '0.5rem' }}>
                   
-                  {/* Professional Summary */}
-                  <div id="summary">
-                    <Profile profile={cvData.profile} />
+                  {/* Profile Picture */}
+                  {cvData.header?.photo && (
+                    <div className="flex justify-center">
+                      <img
+                        src={cvData.header.photo}
+                        alt={cvData.header.name}
+                        className="profile-image w-[186px] h-[186px] rounded-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Name and Position */}
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                      {cvData.header?.name}
+                    </h1>
+                    <p className="text-lg font-medium" style={{ color: '#5bb3b8' }}>
+                      {cvData.header?.title}
+                    </p>
                   </div>
-
-                  {/* Certifications */}
-                  <div id="certifications">
-                    <Certifications certifications={cvData.certifications} />
+                  
+                  {/* Cursive C wave separator */}
+                  <svg width="100%" height="20" viewBox="0 0 1440 20" preserveAspectRatio="none" style={{display: 'block', margin: '1rem 0'}}>
+                    <path d="M0,10 Q60,2 120,10 T240,10 T360,10 T480,10 T600,10 T720,10 T840,10 T960,10 T1080,10 T1200,10 T1320,10 T1440,10" stroke="#5bb3b8" strokeWidth="2" fill="none"/>
+                  </svg>
+                  
+                  {/* Contact Info from Header */}
+                  <div className="space-y-2">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-700 mb-2">
+                      Contact Information
+                    </h2>
+                    <div className="space-y-2 text-sm text-gray-700">
+                      {cvData.header?.email && (
+                        <div className="flex items-center">
+                          <img src="/icons/tabler-mail-spark-line.png" alt="Email" className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <span>{cvData.header.email}</span>
+                        </div>
+                      )}
+                      {cvData.header?.phone && (
+                        <div className="flex items-center">
+                          <img src="/icons/tabler-device-mobile-line.png" alt="Phone" className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <span>{cvData.header.phone}</span>
+                        </div>
+                      )}
+                      {cvData.header?.location && (
+                        <div className="flex items-center">
+                          <img src="/icons/tabler-current-location-line.png" alt="Location" className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <span>{cvData.header.location}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-
-                  {/* Work Experience */}
-                  <div id="experience">
-                    <ExperienceList experience={cvData.experience} />
-                  </div>
-
-                </div>
-
-                {/* Right Column (≈ 35%) */}
-                <div className="md:col-span-4 space-y-6 lg:space-y-8">
                   
                   {/* Personal Information */}
                   <PersonalInfo personalInformation={cvData.personalInformation} />
@@ -270,6 +436,41 @@ export default function PrintCV({ cvData, slug }) {
                   {/* References */}
                   <div id="references">
                     <ReferencesList references={cvData.references} />
+                  </div>
+
+                  {/* Badge - Show if enabled */}
+                  {cvData.header?.showBadge && (
+                    <div className="flex justify-start items-center">
+                      <img
+                        src="/shape_converted.png"
+                        alt="Pull North Badge"
+                        className="w-[93px] h-[93px] object-contain"
+                        onError={(e) => { 
+                          console.warn('Badge shape PNG not found at /shape_converted.png');
+                          e.target.style.display = 'none'; 
+                        }}
+                      />
+                    </div>
+                  )}
+
+                </div>
+
+                {/* Right Column (≈ 67%) - Main Content */}
+                <div className="col-span-8 space-y-6">
+                  
+                  {/* Professional Summary */}
+                  <div id="summary">
+                    <Profile profile={cvData.profile} />
+                  </div>
+
+                  {/* Certifications */}
+                  <div id="certifications">
+                    <Certifications certifications={cvData.certifications} />
+                  </div>
+
+                  {/* Work Experience */}
+                  <div id="experience">
+                    <ExperienceList experience={cvData.experience} />
                   </div>
 
                 </div>

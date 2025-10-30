@@ -26,7 +26,7 @@ async function testCloudinary() {
     const fileBuffer = fs.readFileSync(testImagePath);
     
     const uploadResult = await uploadProfilePhoto(fileBuffer, {
-      public_id: `cv-builder/test-${Date.now()}`
+      public_id: `test-${Date.now()}`
     });
     
     if (uploadResult.success) {

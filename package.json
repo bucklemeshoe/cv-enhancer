@@ -20,6 +20,7 @@
     "browser-image-compression": "^2.0.2",
     "cloudinary": "^2.8.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "formidable": "^3.5.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
