@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 
 // Import digital CV components (same as main CV page)
 import PersonalInfo from '../../../components/PersonalInfo'
-import Skills from '../../../components/Skills'
 import Profile from '../../../components/Profile'
 import Certifications from '../../../components/Certifications'
 import ExperienceList from '../../../components/ExperienceList'
@@ -215,24 +214,10 @@ export default function PrintCV({ cvData, slug }) {
             padding-left: 0 !important;
           }
           
-          /* Skills: Show underlined text view instead of pills */
-          #skills .inline-flex.items-center {
-            display: inline-block !important;
-            background-color: transparent !important;
-            border: none !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            color: #1f2937 !important;
-            text-decoration: underline !important;
-            text-decoration-color: #5bb3b8 !important;
-            text-underline-offset: 3px !important;
-            text-decoration-thickness: 2px !important;
-          }
-          
-          /* Certifications: Two column grid */
+          /* Certifications: Three column grid */
           #certifications ul {
             display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
+            grid-template-columns: repeat(3, 1fr) !important;
             gap: 1rem !important;
           }
           
@@ -353,13 +338,13 @@ export default function PrintCV({ cvData, slug }) {
               <path d="M1440,224L1380,213.3C1320,203,1200,181,1080,181.3C960,181,840,203,720,192C600,181,480,139,360,106.7C240,75,120,53,60,42.7L0,32L0,0L60,0C120,0,240,0,360,0C480,0,600,0,720,0C840,0,960,0,1080,0C1200,0,1320,0,1380,0L1440,0Z" fill="#F1F8F8"/>
             </svg>
             
-            <div className="mx-auto px-8">
+            <div className="mx-auto">
               {/* Main Content - Two Column Grid with header in left column */}
-              <div className="py-4">
+              <div className="">
               <div className="grid grid-cols-12 gap-6">
                 
                 {/* Left Column (≈ 33%) - Profile, Contact, etc. */}
-                <div className="col-span-4 space-y-6" style={{ backgroundColor: '#eef8f9', padding: '1.5rem', borderRadius: '0.5rem' }}>
+                <div className="col-span-4 space-y-6" style={{ backgroundColor: '#eef8f9', paddingTop: '2.5rem', paddingRight: '1.5rem', paddingBottom: '1.5rem', paddingLeft: '1.5rem', borderRadius: '0' }}>
                   
                   {/* Profile Picture */}
                   {cvData.header?.photo && (
@@ -398,19 +383,25 @@ export default function PrintCV({ cvData, slug }) {
                     <div className="space-y-2 text-sm text-gray-700">
                       {cvData.header?.email && (
                         <div className="flex items-center">
-                          <img src="/icons/tabler-mail-spark-line.png" alt="Email" className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <div className="h-6 w-6 rounded-full border mr-2 flex-shrink-0 flex items-center justify-center" style={{ borderColor: '#5bb3b8', borderWidth: '1px' }}>
+                            <img src="/icons/tabler-mail-spark-line.png" alt="Email" className="h-4 w-4" />
+                          </div>
                           <span>{cvData.header.email}</span>
                         </div>
                       )}
                       {cvData.header?.phone && (
                         <div className="flex items-center">
-                          <img src="/icons/tabler-device-mobile-line.png" alt="Phone" className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <div className="h-6 w-6 rounded-full border mr-2 flex-shrink-0 flex items-center justify-center" style={{ borderColor: '#5bb3b8', borderWidth: '1px' }}>
+                            <img src="/icons/tabler-device-mobile-line.png" alt="Phone" className="h-4 w-4" />
+                          </div>
                           <span>{cvData.header.phone}</span>
                         </div>
                       )}
                       {cvData.header?.location && (
                         <div className="flex items-center">
-                          <img src="/icons/tabler-current-location-line.png" alt="Location" className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <div className="h-6 w-6 rounded-full border mr-2 flex-shrink-0 flex items-center justify-center" style={{ borderColor: '#5bb3b8', borderWidth: '1px' }}>
+                            <img src="/icons/tabler-current-location-line.png" alt="Location" className="h-4 w-4" />
+                          </div>
                           <span>{cvData.header.location}</span>
                         </div>
                       )}
@@ -421,9 +412,18 @@ export default function PrintCV({ cvData, slug }) {
                   <PersonalInfo personalInformation={cvData.personalInformation} />
 
                   {/* Skills */}
-                  <div id="skills">
-                    <Skills skills={cvData.skills} />
-                  </div>
+                  {cvData.skills && cvData.skills.length > 0 && (
+                    <div id="skills">
+                      <div className="print-section">
+                        <h3 className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                          Skills
+                        </h3>
+                        <p className="text-xs text-gray-700">
+                          {cvData.skills.join(', ')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Hobbies & Interests */}
                   <Hobbies hobbies={cvData.hobbiesAndInterests} />
@@ -456,7 +456,7 @@ export default function PrintCV({ cvData, slug }) {
                 </div>
 
                 {/* Right Column (≈ 67%) - Main Content */}
-                <div className="col-span-8 space-y-6">
+                <div className="col-span-8 space-y-6" style={{ paddingTop: '2.5rem', paddingRight: '16px' }}>
                   
                   {/* Professional Summary */}
                   <div id="summary">

@@ -210,6 +210,32 @@ export default async function handler(req, res) {
         backup: backupSnapshot
       })
     }
+
+    // Validate skills limit
+    if (mergedData.skills) {
+      const skillsArray = mergedData.skills.split(',').map(s => s.trim()).filter(s => s)
+      if (skillsArray.length > 15) {
+        return res.status(400).json({ 
+          message: 'Too many skills. Please limit to 15 skills maximum.',
+          field: 'skills'
+        })
+      }
+    }
+
+    // Validate references limit
+    if (mergedData.references && Array.isArray(mergedData.references)) {
+      const validReferences = mergedData.references.filter(ref => 
+        ref.name && ref.name.trim() !== '' && 
+        ref.roleOrRelation && ref.roleOrRelation.trim() !== '' && 
+        ref.contact && ref.contact.trim() !== ''
+      )
+      if (validReferences.length > 3) {
+        return res.status(400).json({ 
+          message: 'Too many references. Please limit to 3 references maximum.',
+          field: 'references'
+        })
+      }
+    }
     
     
     // Update the submission data in Supabase with MERGED data
