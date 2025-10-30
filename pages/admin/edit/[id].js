@@ -44,6 +44,7 @@ export default function EditCV() {
     health: '',
     profilePicture: null,
     videoUrl: null,
+    showBadge: false, // Admin-only badge toggle
     
     // Professional Information
     targetRole: '',
@@ -446,7 +447,10 @@ export default function EditCV() {
           additionalNotes: data.additionalNotes || '',
           
           // Video URL
-          videoUrl: data.videoUrl || null
+          videoUrl: data.videoUrl || null,
+          
+          // Badge toggle (Admin only)
+          showBadge: data.showBadge || false
         }
         
         // Validate form structure in development
@@ -575,6 +579,7 @@ export default function EditCV() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
+    
     
     try {
       // Always send JSON. profilePicture is already a base64 string if present
@@ -1344,6 +1349,31 @@ export default function EditCV() {
                             </div>
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Badge Toggle Section (Admin Only) */}
+                    <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                      <label htmlFor="showBadge" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
+                        Badges (Admin Only)
+                      </label>
+                      <div className="mt-2 sm:col-span-2 sm:mt-0">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            name="showBadge"
+                            id="showBadge"
+                            checked={formData.showBadge}
+                            onChange={(e) => setFormData(prev => ({ ...prev, showBadge: e.target.checked }))}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-600 border-gray-300 rounded"
+                          />
+                          <label htmlFor="showBadge" className="ml-3 text-sm leading-6 text-gray-900">
+                            Does this person meet the Pull North standard?
+                          </label>
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-gray-600">
+                          When checked, a Pull North badge will be displayed on their CV.
+                        </p>
                       </div>
                     </div>
 

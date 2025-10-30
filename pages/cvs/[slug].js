@@ -16,6 +16,7 @@ import Footer from '../../components/Footer'
 import WavePattern from '../../components/WavePattern'
 
 export default function CVPage({ cvData, slug }) {
+  
   if (!cvData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -54,7 +55,7 @@ export default function CVPage({ cvData, slug }) {
         <WavePattern position="top" color="white" bgColor="teal-bright" />
 
         {/* Header Section */}
-        <Header header={{...cvData.header, videoUrl: cvData.videoUrl}} />
+               <Header header={{...cvData.header, videoUrl: cvData.videoUrl, showBadge: cvData.header.showBadge}} />
 
         {/* Main Two-Column Layout */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -328,6 +329,175 @@ export default function CVPage({ cvData, slug }) {
                   const overlay = document.querySelector('[style*="z-index: 9999"]');
                   if (overlay && overlay.parentNode) {
                     document.body.removeChild(overlay);
+                  }
+                  
+                  // Reset button on error
+                  event.target.textContent = 'Download PDF (1)';
+                  event.target.disabled = false;
+                  // Show print buttons again
+                  document.querySelector('.fixed.bottom-4').style.display = 'block';
+                }
+              }}
+              className="hidden block w-full text-white px-3 py-2 md:px-4 md:py-2 rounded-lg shadow-lg transition-colors text-xs md:text-sm font-medium bg-blue-700 hover:bg-blue-800"
+            >
+              Download PDF (1)
+            </button>
+            <button 
+              onClick={async (event) => {
+                try {
+                  // Dynamically import the libraries
+                  const html2canvas = (await import('html2canvas')).default;
+                  const jsPDF = (await import('jspdf')).jsPDF;
+                  
+                  // Show loading state
+                  const button = event.target;
+                  const originalText = button.textContent;
+                  button.textContent = 'Generating PDF...';
+                  button.disabled = true;
+                  
+                  // Create loading overlay
+                  const overlay = document.createElement('div');
+                  overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(255, 255, 255, 0.95);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  `;
+                  
+                  const loadingText = document.createElement('div');
+                  loadingText.textContent = 'Generating PDF...';
+                  loadingText.style.cssText = `
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #374151;
+                    margin-bottom: 16px;
+                  `;
+                  
+                  const spinner = document.createElement('div');
+                  spinner.style.cssText = `
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #e5e7eb;
+                    border-top: 4px solid #5bb3b8;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                  `;
+                  
+                  // Add CSS animation
+                  const style = document.createElement('style');
+                  style.textContent = `
+                    @keyframes spin {
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                    }
+                  `;
+                  document.head.appendChild(style);
+                  
+                  overlay.appendChild(loadingText);
+                  overlay.appendChild(spinner);
+                  document.body.appendChild(overlay);
+                  
+                  // Hide print buttons during generation
+                  const printButtons = document.querySelector('.fixed.bottom-4');
+                  printButtons.style.display = 'none';
+                  
+                  // Open print page in hidden iframe to get the content
+                  const iframe = document.createElement('iframe');
+                  iframe.style.cssText = `
+                    position: absolute;
+                    top: -9999px;
+                    left: -9999px;
+                    width: 1500px;
+                    height: 2000px;
+                    border: none;
+                  `;
+                  iframe.src = `/cvs/${slug}/print`;
+                  document.body.appendChild(iframe);
+                  
+                  // Wait for iframe to load
+                  await new Promise((resolve) => {
+                    iframe.onload = resolve;
+                  });
+                  
+                  // Wait a bit more for content to render
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                  
+                  // Get the CV content from the iframe
+                  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                  const cvElement = iframeDoc.querySelector('.cv-content');
+                  
+                  if (!cvElement) {
+                    throw new Error('Could not find CV content in print page');
+                  }
+                  
+                  // Capture the CV content from iframe
+                  const canvas = await html2canvas(cvElement, {
+                    scale: 2, // Higher quality
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: cvElement.scrollWidth,
+                    height: cvElement.scrollHeight
+                  });
+                  
+                  // Clean up iframe
+                  document.body.removeChild(iframe);
+                  
+                  // Show print buttons again
+                  printButtons.style.display = 'block';
+                  
+                  // Create PDF
+                  const imgData = canvas.toDataURL('image/png');
+                  const pdf = new jsPDF('p', 'mm', 'a4');
+                  
+                  // Calculate dimensions to fit A4
+                  const pdfWidth = pdf.internal.pageSize.getWidth();
+                  const pdfHeight = pdf.internal.pageSize.getHeight();
+                  const imgWidth = canvas.width;
+                  const imgHeight = canvas.height;
+                  const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                  const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                  const imgY = 0;
+                  
+                  pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+                  
+                  // Generate filename
+                  const name = cvData?.header?.name?.replace(/\s+/g, '-') || 'cv';
+                  const fileName = `${name}-CV-Print.pdf`;
+                  
+                  // Download PDF
+                  pdf.save(fileName);
+                  
+                  // Clean up
+                  document.body.removeChild(overlay);
+                  document.head.removeChild(style);
+                  
+                  // Reset button
+                  button.textContent = originalText;
+                  button.disabled = false;
+                  
+                } catch (error) {
+                  console.error('PDF generation failed:', error);
+                  alert('Failed to generate PDF. Please try again.');
+                  
+                  // Clean up overlay if it exists
+                  const overlay = document.querySelector('[style*="z-index: 9999"]');
+                  if (overlay && overlay.parentNode) {
+                    document.body.removeChild(overlay);
+                  }
+                  
+                  // Clean up iframe if it exists
+                  const iframe = document.querySelector('iframe[src*="/print"]');
+                  if (iframe && iframe.parentNode) {
+                    document.body.removeChild(iframe);
                   }
                   
                   // Reset button on error
