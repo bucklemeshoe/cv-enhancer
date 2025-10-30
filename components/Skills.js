@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 
 export default function Skills({ skills }) {
   const [isPdfCapturing, setIsPdfCapturing] = useState(false);
+  
+  // Check if skills are at or near the limit
+  const skillsCount = skills ? skills.length : 0;
+  const isAtLimit = skillsCount >= 15;
+  const isNearLimit = skillsCount >= 13;
 
   useEffect(() => {
     // Watch for PDF capturing class changes
@@ -30,9 +35,13 @@ export default function Skills({ skills }) {
 
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-8">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-700 mb-4">
-        Skills
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
+          Skills
+        </h2>
+      </div>
+      
+      
       
       {!isPdfCapturing ? (
         /* Pills view for screen display */

@@ -184,6 +184,16 @@ export default function Apply() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
+    
+    // Handle skills limit validation
+    if (name === 'skills') {
+      const skillsArray = value.split(',').map(s => s.trim()).filter(s => s)
+      if (skillsArray.length > 15) {
+        // Don't update if more than 15 skills
+        return
+      }
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -959,9 +969,9 @@ export default function Apply() {
                     
                     <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
                       <label htmlFor="skills" className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">
-                        Skills <span className="text-sm text-gray-500">(comma-separated)</span>
+                        Skills <span className="text-sm text-gray-500">(comma-separated, max 15)</span>
                       </label>
-                      <div className="mt-2 sm:col-span-2 sm:mt-0">
+                      <div className="mt-2 sm:col-span-2 sm:mt-0 relative">
                         <textarea
                           name="skills"
                           id="skills"
@@ -969,10 +979,13 @@ export default function Apply() {
                           value={formData.skills}
                           onChange={handleInputChange}
                           placeholder="e.g., Communication, Organization, Washdowns, Deck Maintenance, Time Management, Problem Solving, Guest Services"
-                          className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-2xl sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 px-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-2xl sm:text-sm sm:leading-6"
                         />
+                        <div className="absolute bottom-2 right-2 text-xs font-medium text-gray-500 pointer-events-none">
+                          {formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(s => s).length : 0}/15
+                        </div>
                         <p className="mt-3 text-sm leading-6 text-gray-600">
-                          Separate each skill with a comma. Example: Communication, Leadership, Safety Protocols
+                          Separate each skill with a comma
                         </p>
                       </div>
                     </div>
@@ -1318,12 +1331,27 @@ export default function Apply() {
                           <button
                             type="button"
                             onClick={() => addObjectArrayItem('references', { name: '', roleOrRelation: '', contact: '', website: '' })}
-                            className="rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors"
-                            style={{ backgroundColor: '#14b8a6' }}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = '#0d9488'}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = '#14b8a6'}
+                            disabled={formData.references.length >= 3}
+                            className={`rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors ${
+                              formData.references.length >= 3 
+                                ? 'bg-gray-400 cursor-not-allowed' 
+                                : 'hover:bg-teal-700'
+                            }`}
+                            style={{ 
+                              backgroundColor: formData.references.length >= 3 ? '#9ca3af' : '#14b8a6'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (formData.references.length < 3) {
+                                e.target.style.backgroundColor = '#0d9488'
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (formData.references.length < 3) {
+                                e.target.style.backgroundColor = '#14b8a6'
+                              }
+                            }}
                           >
-                            Add Reference
+                            Add Reference {formData.references.length >= 3 ? '(Max 3)' : ''}
                           </button>
                         </div>
                       </div>

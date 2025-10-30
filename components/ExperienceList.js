@@ -12,6 +12,13 @@ const formatDate = (dateString) => {
 export default function ExperienceList({ experience }) {
   if (!experience || experience.length === 0) return null
 
+  // Sort experiences by start date (newest to oldest, no date = oldest)
+  const sortedExperience = [...experience].sort((a, b) => {
+    const dateA = a.startDate ? new Date(a.startDate).getTime() : 0
+    const dateB = b.startDate ? new Date(b.startDate).getTime() : 0
+    return dateB - dateA // Sort newest to oldest
+  })
+
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-8">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-700 mb-4">
@@ -19,7 +26,7 @@ export default function ExperienceList({ experience }) {
       </h2>
       
       <div className="space-y-6">
-        {experience.map((job, index) => (
+        {sortedExperience.map((job, index) => (
           <div key={index} className="relative">
             
             {/* Timeline dot */}

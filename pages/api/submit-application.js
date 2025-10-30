@@ -83,6 +83,32 @@ export default async function handler(req, res) {
       fs.unlinkSync(file.filepath)
     }
 
+    // Validate skills limit
+    if (formData.skills) {
+      const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s)
+      if (skillsArray.length > 15) {
+        return res.status(400).json({ 
+          message: 'Too many skills. Please limit to 15 skills maximum.',
+          field: 'skills'
+        })
+      }
+    }
+
+    // Validate references limit
+    if (formData.references && Array.isArray(formData.references)) {
+      const validReferences = formData.references.filter(ref => 
+        ref.name && ref.name.trim() !== '' && 
+        ref.roleOrRelation && ref.roleOrRelation.trim() !== '' && 
+        ref.contact && ref.contact.trim() !== ''
+      )
+      if (validReferences.length > 3) {
+        return res.status(400).json({ 
+          message: 'Too many references. Please limit to 3 references maximum.',
+          field: 'references'
+        })
+      }
+    }
+
     // Generate a unique ID for this submission (6 characters)
     const uniqueId = Math.random().toString(36).substring(2, 8).toUpperCase()
     
