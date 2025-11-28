@@ -4,6 +4,9 @@
  * Test script to verify Cloudinary integration is working
  */
 
+// Load environment variables first
+require('dotenv').config({ path: require('path').join(__dirname, '../.env.local') });
+
 const { uploadProfilePhoto, isCloudinaryUrl, isBase64DataUrl } = require('../lib/cloudinary');
 const fs = require('fs');
 const path = require('path');
