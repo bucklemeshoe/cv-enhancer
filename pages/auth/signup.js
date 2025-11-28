@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { signUp, resendConfirmation } from '../../lib/auth'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function SignUp() {
   const router = useRouter()
   const { user } = useAuth()
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -39,10 +42,22 @@ export default function SignUp() {
       return
     }
 
+    // Validate first name
+    if (!firstName || firstName.trim() === '') {
+      setError('First name is required')
+      return
+    }
+
+    // Validate last name
+    if (!lastName || lastName.trim() === '') {
+      setError('Last name is required')
+      return
+    }
+
     setLoading(true)
 
     try {
-      const { user: newUser, error: signUpError } = await signUp(email, password)
+      const { user: newUser, error: signUpError } = await signUp(email, password, firstName.trim(), lastName.trim())
 
       if (signUpError) {
         setError(signUpError.message)
@@ -86,6 +101,18 @@ export default function SignUp() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center mb-6">
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <img 
+              src="/images/Pull North Stamp design.png" 
+              alt="Pull North Logo" 
+              className="h-20 w-20 rounded-full bg-white p-3 shadow-lg object-contain cursor-pointer"
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+          </Link>
+        </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Create your account
         </h2>
@@ -154,6 +181,44 @@ export default function SignUp() {
 
             {!success && (
               <>
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                    First Name
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      autoComplete="given-name"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                      placeholder="John"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      autoComplete="family-name"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                      placeholder="Doe"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                     Email address

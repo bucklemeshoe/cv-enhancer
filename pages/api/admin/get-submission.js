@@ -43,7 +43,8 @@ export default async function handler(req, res) {
       reviewedAt: data.reviewed_at || null,
       publishedAt: data.published_at || null,
       publishedSlug: data.published_slug || data.unique_id,
-      slug: data.published_slug || data.unique_id
+      slug: data.published_slug || data.unique_id,
+      userId: data.user_id || null
     }
 
     res.status(200).json({ submission: transformedSubmission })

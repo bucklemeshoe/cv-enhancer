@@ -71,7 +71,7 @@ export default function Home() {
                 {!authLoading && user ? (
                   <Link href="/my-cvs">
                     <button className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-teal-600 border border-teal-600 rounded-lg hover:bg-teal-700 hover:border-teal-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
-                      My CVs
+                      Dashboard
                     </button>
                   </Link>
                 ) : (
@@ -115,7 +115,7 @@ export default function Home() {
 
             {/* Main CTA */}
             <div className="max-w-md mx-auto">
-              <Link href="/apply">
+              <Link href="/auth/signup">
                 <button className="w-full bg-gradient-to-r from-teal-500 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-teal-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">
                   Start Your Application
                   <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">

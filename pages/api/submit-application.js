@@ -22,6 +22,7 @@ export default async function handler(req, res) {
 
   // Get authenticated user from request headers
   let userId = null
+  let userMetadata = null
   const authHeader = req.headers.authorization
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7)
@@ -29,6 +30,7 @@ export default async function handler(req, res) {
       const { data: { user }, error } = await supabase.auth.getUser(token)
       if (!error && user) {
         userId = user.id
+        userMetadata = user.user_metadata
       }
     } catch (error) {
       console.error('Error getting user from token:', error)
@@ -121,6 +123,39 @@ export default async function handler(req, res) {
           message: 'Too many references. Please limit to 3 references maximum.',
           field: 'references'
         })
+      }
+    }
+
+    // If user is logged in and firstName/lastName are missing, use account name
+    if (userId && userMetadata) {
+      // Check for firstName and lastName first (new format)
+      const firstName = userMetadata.firstName
+      const lastName = userMetadata.lastName
+      if (firstName && lastName) {
+        if (!formData.firstName) {
+          formData.firstName = firstName
+        }
+        if (!formData.lastName) {
+          formData.lastName = lastName
+        }
+      } else {
+        // Fallback to full name (legacy format)
+        const userName = userMetadata.name || userMetadata.full_name
+        if (userName && (!formData.firstName || !formData.lastName)) {
+          const nameParts = userName.trim().split(/\s+/)
+          if (nameParts.length >= 2) {
+            // Split into first name and last name
+            if (!formData.firstName) {
+              formData.firstName = nameParts[0]
+            }
+            if (!formData.lastName) {
+              formData.lastName = nameParts.slice(1).join(' ') // Join remaining parts as last name
+            }
+          } else if (nameParts.length === 1 && !formData.firstName) {
+            // Single name - use as first name
+            formData.firstName = nameParts[0]
+          }
+        }
       }
     }
 
