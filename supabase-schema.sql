@@ -12,7 +12,8 @@ CREATE TABLE submissions (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     reviewed_at TIMESTAMP WITH TIME ZONE,
     published_at TIMESTAMP WITH TIME ZONE,
-    published_slug TEXT
+    published_slug TEXT,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
 -- Published CVs table (replaces data/published/ folder)
@@ -30,6 +31,7 @@ CREATE TABLE published_cvs (
 CREATE INDEX idx_submissions_unique_id ON submissions(unique_id);
 CREATE INDEX idx_submissions_status ON submissions(status);
 CREATE INDEX idx_submissions_submitted_at ON submissions(submitted_at DESC);
+CREATE INDEX idx_submissions_user_id ON submissions(user_id) WHERE user_id IS NOT NULL;
 CREATE INDEX idx_published_cvs_slug ON published_cvs(slug);
 CREATE INDEX idx_published_cvs_unique_id ON published_cvs(unique_id);
 
@@ -41,9 +43,28 @@ ALTER TABLE published_cvs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access to published CVs" ON published_cvs
     FOR SELECT USING (true);
 
--- Allow all operations for now (we'll add proper auth later)
+-- Allow all operations for admin/service role (backward compatibility)
 CREATE POLICY "Allow all operations on submissions" ON submissions
     FOR ALL USING (true);
+
+-- RLS Policies for user submissions
+-- Users can view their own submissions or legacy submissions (no user_id)
+CREATE POLICY "Users can view own submissions" ON submissions
+    FOR SELECT USING (
+        auth.uid() = user_id OR user_id IS NULL
+    );
+
+-- Users can update their own submissions
+CREATE POLICY "Users can update own submissions" ON submissions
+    FOR UPDATE USING (
+        auth.uid() = user_id OR auth.uid() IS NULL
+    );
+
+-- Users can insert their own submissions
+CREATE POLICY "Users can insert own submissions" ON submissions
+    FOR INSERT WITH CHECK (
+        auth.uid() = user_id OR user_id IS NULL
+    );
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

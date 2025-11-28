@@ -20,6 +20,21 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed' })
   }
 
+  // Get authenticated user from request headers
+  let userId = null
+  const authHeader = req.headers.authorization
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7)
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser(token)
+      if (!error && user) {
+        userId = user.id
+      }
+    } catch (error) {
+      console.error('Error getting user from token:', error)
+    }
+  }
+
   try {
     // Parse FormData
     const form = formidable({})
@@ -123,7 +138,8 @@ export default async function handler(req, res) {
         submitted_at: submittedAt,
         status: 'pending',
         student_data: formData,
-        published_slug: uniqueId
+        published_slug: uniqueId,
+        user_id: userId // Link submission to authenticated user (or null for legacy submissions)
       }])
       .select()
     

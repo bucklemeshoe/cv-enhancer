@@ -1,7 +1,32 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useAuth } from '../contexts/AuthContext'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 export default function Home() {
+  const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
+
+  // Check for password reset hash fragments and redirect to reset password page
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash
+      if (hash) {
+        const hashParams = new URLSearchParams(hash.substring(1))
+        const type = hashParams.get('type')
+        const error = hashParams.get('error')
+        
+        // If there's a recovery token or error related to password reset, redirect to reset password page
+        if (type === 'recovery' || (error && hash.includes('otp'))) {
+          // Use window.location to preserve hash fragments
+          window.location.href = `/auth/reset-password${hash}`
+          return
+        }
+      }
+    }
+  }, [])
+
   return (
     <>
       <Head>
@@ -42,11 +67,28 @@ export default function Home() {
                 alt="Pull North Logo" 
                 className="h-12 sm:h-16 w-auto object-contain"
               />
-              <Link href="/admin">
-                <button className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-teal-600 hover:border-teal-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
-                  Admin Login
-                </button>
-              </Link>
+              <div className="flex items-center gap-2 sm:gap-3">
+                {!authLoading && user ? (
+                  <Link href="/my-cvs">
+                    <button className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-teal-600 border border-teal-600 rounded-lg hover:bg-teal-700 hover:border-teal-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                      My CVs
+                    </button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/auth/login">
+                      <button className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-teal-600 hover:border-teal-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                        Sign In
+                      </button>
+                    </Link>
+                    <Link href="/auth/signup">
+                      <button className="px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-white bg-teal-600 border border-teal-600 rounded-lg hover:bg-teal-700 hover:border-teal-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                        Sign Up
+                      </button>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -137,8 +179,13 @@ export default function Home() {
                  </div>
                </div>
 
-               {/* Right Side - Social Media */}
+               {/* Right Side - Admin Login & Social Media */}
                <div className="text-center md:text-right">
+                 <Link href="/admin">
+                   <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-teal-600 hover:border-teal-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 mb-4">
+                     Admin Login
+                   </button>
+                 </Link>
                  <h4 className="text-lg font-semibold mb-4 font-heading" style={{ color: '#3e3e3e' }}>Follow Us</h4>
                  <div className="flex justify-center md:justify-end space-x-4">
                    <a href="https://www.pullnorthyachting.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-teal-600 transition-colors duration-200">

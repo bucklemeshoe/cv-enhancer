@@ -1,12 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import imageCompression from 'browser-image-compression'
+import { useAuth } from '../contexts/AuthContext'
+import { supabaseClient } from '../lib/supabaseClient'
 
 export default function Apply() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [showDiscardModal, setShowDiscardModal] = useState(false)
   const [formData, setFormData] = useState({
     // Personal Information
@@ -300,8 +303,18 @@ export default function Apply() {
         }
       })
 
+      // Get auth token for authenticated requests
+      const { data: { session } } = await supabaseClient.auth.getSession()
+      const token = session?.access_token
+      
+      const headers = {}
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
       const response = await fetch('/api/submit-application', {
         method: 'POST',
+        headers,
         body: submitData,
       })
       
@@ -340,6 +353,30 @@ export default function Apply() {
     }
     
     setIsSubmitting(false)
+  }
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/auth/login?redirect=/apply')
+    }
+  }, [user, authLoading, router])
+  
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Don't render if not authenticated
+  if (!user) {
+    return null
   }
 
   return (
